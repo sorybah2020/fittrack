@@ -4,7 +4,8 @@ import { format } from "date-fns";
 import { WorkoutCard } from "@/components/WorkoutCard";
 import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
-import { Workout } from "@/lib/fitness-types";
+import { EditWorkoutModal } from "@/components/EditWorkoutModal";
+import { Workout, WorkoutType } from "@/lib/fitness-types";
 import { useParams, useLocation } from "wouter";
 import {
   Select,
@@ -19,6 +20,8 @@ import { Link } from "wouter";
 
 export default function Workouts() {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false);
+  const [isEditWorkoutOpen, setIsEditWorkoutOpen] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const params = useParams();
@@ -31,18 +34,33 @@ export default function Workouts() {
     }
   }, [params, navigate]);
   
+  const handleEditWorkout = (workout: Workout) => {
+    setSelectedWorkout(workout);
+    setIsEditWorkoutOpen(true);
+  };
+  
+  const handleDeleteWorkout = (workoutId: number) => {
+    // Find the workout to delete and open the edit modal with it
+    // This way we can use the delete confirmation in the edit modal
+    const workoutToDelete = (workouts as Workout[]).find((w: Workout) => w.id === workoutId);
+    if (workoutToDelete) {
+      setSelectedWorkout(workoutToDelete);
+      setIsEditWorkoutOpen(true);
+    }
+  };
+  
   // Get all workouts
-  const { data: workouts = [] } = useQuery({
+  const { data: workouts = [] } = useQuery<Workout[]>({
     queryKey: ['/api/workouts'],
   });
   
   // Get workout types for dropdown menu
-  const { data: workoutTypes = [] } = useQuery({
+  const { data: workoutTypes = [] } = useQuery<WorkoutType[]>({
     queryKey: ['/api/workout-types'],
   });
   
   // Filter workouts based on type and search term
-  const filteredWorkouts = workouts.filter((workout: Workout) => {
+  const filteredWorkouts = (workouts as Workout[]).filter((workout: Workout) => {
     const matchesType = filter === "all" || workout.workoutTypeId.toString() === filter;
     const matchesSearch = searchTerm === "" || 
       workout.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -96,7 +114,7 @@ export default function Workouts() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
-              {workoutTypes.map((type: any) => (
+              {(workoutTypes as WorkoutType[]).map((type: WorkoutType) => (
                 <SelectItem key={type.id} value={type.id.toString()}>
                   {type.name}
                 </SelectItem>
@@ -116,7 +134,12 @@ export default function Workouts() {
               </h2>
               
               {groupedWorkouts[dateStr].map((workout: Workout) => (
-                <WorkoutCard key={workout.id} workout={workout} />
+                <WorkoutCard 
+                  key={workout.id} 
+                  workout={workout} 
+                  onEdit={handleEditWorkout}
+                  onDelete={handleDeleteWorkout}
+                />
               ))}
             </div>
           ))
@@ -141,6 +164,19 @@ export default function Workouts() {
         isOpen={isAddWorkoutOpen}
         onClose={() => setIsAddWorkoutOpen(false)}
       />
+      
+      {/* Edit Workout Modal */}
+      {selectedWorkout && (
+        <EditWorkoutModal
+          isOpen={isEditWorkoutOpen}
+          onClose={() => {
+            setIsEditWorkoutOpen(false);
+            setSelectedWorkout(null);
+          }}
+          workout={selectedWorkout}
+          workoutTypes={workoutTypes as WorkoutType[]}
+        />
+      )}
     </div>
   );
 }
