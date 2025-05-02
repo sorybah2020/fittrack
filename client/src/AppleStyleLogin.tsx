@@ -49,8 +49,8 @@ export default function AppleStyleLogin() {
 
       console.log("Login successful!");
       
-      // Use window.location for a full page refresh
-      window.location.href = "/";
+      // Use window.location for a full page refresh with cache busting parameter
+      window.location.href = "/?login=" + new Date().getTime();
     } catch (err) {
       console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "Login failed");
@@ -103,8 +103,8 @@ export default function AppleStyleLogin() {
 
       console.log("Registration successful!");
       
-      // Redirect to home page after successful registration
-      window.location.href = "/";
+      // Redirect to home page after successful registration with cache busting
+      window.location.href = "/?login=" + new Date().getTime();
     } catch (err) {
       console.error("Registration error:", err);
       setError(err instanceof Error ? err.message : "Registration failed");

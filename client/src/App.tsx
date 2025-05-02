@@ -1,16 +1,63 @@
-import { useState } from "react";
+import { Route, Switch } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { queryClient } from "./lib/queryClient";
+import Dashboard from "@/pages/Dashboard";
+import Workouts from "@/pages/Workouts";
+import WorkoutVideos from "@/pages/WorkoutVideos";
+import WorkoutMusic from "@/pages/WorkoutMusic";
+import Progress from "@/pages/Progress";
+import Profile from "@/pages/Profile";
 import AppleStyleLogin from "./AppleStyleLogin";
+import NotFound from "@/pages/not-found";
 import { AuthProvider } from "./hooks/use-auth";
+import { useAuth } from "./hooks/use-auth";
+import { Loader2 } from "lucide-react";
+
+// Protected route component that doesn't use external module
+function ProtectedRoute({ 
+  path, 
+  component: Component 
+}: { 
+  path: string; 
+  component: () => React.ReactNode;
+}) {
+  const { user, isLoading } = useAuth();
+
+  return (
+    <Route path={path}>
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-screen bg-black">
+          <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+        </div>
+      ) : !user ? (
+        <AppleStyleLogin />
+      ) : (
+        <Component />
+      )}
+    </Route>
+  );
+}
 
 function App() {
-  // Use our Apple-style login directly as we're fixing the routing issues
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppleStyleLogin />
+        <Switch>
+          <Route path="/auth">
+            <AppleStyleLogin />
+          </Route>
+          <ProtectedRoute path="/" component={Dashboard} />
+          <ProtectedRoute path="/workouts/:id" component={Workouts} />
+          <ProtectedRoute path="/workouts" component={Workouts} />
+          <ProtectedRoute path="/workout-videos" component={WorkoutVideos} />
+          <ProtectedRoute path="/workout-music" component={WorkoutMusic} />
+          <ProtectedRoute path="/progress" component={Progress} />
+          <ProtectedRoute path="/profile" component={Profile} />
+          <Route path="*">
+            <NotFound />
+          </Route>
+        </Switch>
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>

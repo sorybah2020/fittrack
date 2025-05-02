@@ -36,10 +36,12 @@ export function setupAuth(app: Express) {
     store: new PostgresSessionStore({
       pool,
       tableName: 'session', // Use the same table name that's already set up
-      createTableIfMissing: false // Don't try to create the table again
+      createTableIfMissing: true // Create table if needed
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // Set to false for development
+      httpOnly: true,
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
     }
   };
@@ -67,13 +69,18 @@ export function setupAuth(app: Express) {
         console.log(`Found user ${username}, password format:`, 
                    user.password ? `${typeof user.password} (${user.password.substring(0, 10)}...)` : 'undefined');
         
-        const passwordMatch = await comparePasswords(password, user.password);
-        
-        if (passwordMatch) {
-          console.log(`Password correct for user: ${username}`);
-          return done(null, user);
-        } else {
-          console.log(`Password incorrect for user: ${username}`);
+        try {
+          const passwordMatch = await comparePasswords(password, user.password);
+          
+          if (passwordMatch) {
+            console.log(`Password correct for user: ${username}`);
+            return done(null, user);
+          } else {
+            console.log(`Password incorrect for user: ${username}`);
+            return done(null, false);
+          }
+        } catch (err) {
+          console.error("Password comparison error:", err);
           return done(null, false);
         }
       } catch (err) {
