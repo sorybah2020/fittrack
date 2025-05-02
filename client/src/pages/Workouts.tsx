@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { WorkoutCard } from "@/components/WorkoutCard";
 import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
 import { Workout } from "@/lib/fitness-types";
+import { useParams, useLocation } from "wouter";
 import {
   Select,
   SelectContent,
@@ -20,11 +21,22 @@ export default function Workouts() {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const params = useParams();
+  const [, navigate] = useLocation();
   
+  // If we have a workout ID in the URL, redirect to the main workouts page
+  useEffect(() => {
+    if (params && params.id) {
+      navigate('/workouts');
+    }
+  }, [params, navigate]);
+  
+  // Get all workouts
   const { data: workouts = [] } = useQuery({
     queryKey: ['/api/workouts'],
   });
   
+  // Get workout types for dropdown menu
   const { data: workoutTypes = [] } = useQuery({
     queryKey: ['/api/workout-types'],
   });

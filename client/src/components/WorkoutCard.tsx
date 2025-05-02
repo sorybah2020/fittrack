@@ -55,7 +55,7 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
             </p>
           </div>
         </div>
-        <Link href={`/workouts/${workout.id}`}>
+        <Link href={`/workouts`}>
           <button className="w-8 h-8 flex items-center justify-center rounded-full bg-white">
             <ChevronRight className="h-4 w-4" />
           </button>

@@ -63,6 +63,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/signup" component={SignUp} />
       <Route path="/" component={() => <PrivateRoute component={Dashboard} />} />
+      <Route path="/workouts/:id" component={() => <PrivateRoute component={Workouts} />} />
       <Route path="/workouts" component={() => <PrivateRoute component={Workouts} />} />
       <Route path="/progress" component={() => <PrivateRoute component={Progress} />} />
       <Route path="/profile" component={() => <PrivateRoute component={Profile} />} />
