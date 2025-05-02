@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ChevronLeft, Music, ExternalLink, Play, Pause, Heart, SkipForward, SkipBack } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ChevronLeft, Music, ExternalLink, Heart, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,10 +20,7 @@ import {
   getSpotifyAuthUrl,
   handleSpotifyCallback,
   getWorkoutPlaylists,
-  createWorkoutPlaylist,
   searchWorkoutTracks,
-  WORKOUT_PLAYLIST_CATEGORIES,
-  WORKOUT_INTENSITY_ENERGY
 } from "@/lib/spotify-service";
 import { queryClient } from "@/lib/queryClient";
 import { Workout } from "@/lib/fitness-types";
@@ -73,9 +69,6 @@ export default function WorkoutMusic() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const error = params.get("error");
-    const accessToken = params.get("access_token");
-    const refreshToken = params.get("refresh_token");
-    const expiresIn = params.get("expires_in");
     const code = params.get("code");
     
     if (error) {
@@ -84,20 +77,6 @@ export default function WorkoutMusic() {
         description: "There was an issue logging into Spotify. Please try again.",
         variant: "destructive"
       });
-      // Clear the URL parameters
-      navigate("/workout-music", { replace: true });
-    } else if (accessToken && refreshToken && expiresIn) {
-      // Store tokens
-      localStorage.setItem("spotify_access_token", accessToken);
-      localStorage.setItem("spotify_refresh_token", refreshToken);
-      localStorage.setItem("spotify_token_expiry", (Date.now() + parseInt(expiresIn) * 1000).toString());
-      
-      setIsLoggedIn(true);
-      toast({
-        title: "Spotify Connected",
-        description: "Successfully connected to Spotify!",
-      });
-      
       // Clear the URL parameters
       navigate("/workout-music", { replace: true });
     } else if (code) {
@@ -204,9 +183,9 @@ export default function WorkoutMusic() {
       
       // Get track URIs for selected tracks
       const trackUris = selectedTrackIds.map(id => {
-        const track = [...(recommendedTracks || []), ...(searchResults || [])].find(t => t.id === id);
+        const track = [...(recommendedTracks || []), ...(searchResults || [])].find((t: any) => t.id === id);
         return track?.uri;
-      }).filter(Boolean);
+      }).filter(Boolean) as string[];
       
       try {
         const accessToken = localStorage.getItem('spotify_access_token');
@@ -388,14 +367,6 @@ export default function WorkoutMusic() {
             </Button>
           )}
         </div>
-        
-        <Tabs defaultValue="discover" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-gray-800 w-full overflow-x-auto flex p-1 space-x-1">
-            <TabsTrigger value="discover" className="flex-1 text-sm">Discover</TabsTrigger>
-            <TabsTrigger value="create" className="flex-1 text-sm">Create Playlist</TabsTrigger>
-            <TabsTrigger value="playlists" className="flex-1 text-sm">My Playlists</TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
       
       {!isLoggedIn ? (
@@ -415,282 +386,254 @@ export default function WorkoutMusic() {
           </div>
         </div>
       ) : (
-        <TabsContent value="discover" className="px-5 py-4 flex-1">
-          <div className="bg-card rounded-xl p-5 mb-6">
-            <h2 className="text-lg font-bold text-white mb-3">Find Music for Your Workout</h2>
+        <div className="flex-1 flex flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+            <TabsList className="bg-gray-800 mx-5 w-auto overflow-x-auto flex p-1 space-x-1">
+              <TabsTrigger value="discover" className="flex-1 text-sm">Discover</TabsTrigger>
+              <TabsTrigger value="create" className="flex-1 text-sm">Create Playlist</TabsTrigger>
+              <TabsTrigger value="playlists" className="flex-1 text-sm">My Playlists</TabsTrigger>
+            </TabsList>
             
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm text-gray-400 block mb-1">Workout Type</label>
-                <Select value={workoutType} onValueChange={setWorkoutType}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
-                    <SelectValue placeholder="Select workout type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="running">Running</SelectItem>
-                    <SelectItem value="cycling">Cycling</SelectItem>
-                    <SelectItem value="walking">Walking</SelectItem>
-                    <SelectItem value="hiit">HIIT</SelectItem>
-                    <SelectItem value="strength">Strength Training</SelectItem>
-                    <SelectItem value="yoga">Yoga</SelectItem>
-                    <SelectItem value="dancing">Dancing</SelectItem>
-                  </SelectContent>
-                </Select>
+            <TabsContent value="discover" className="px-5 py-4 flex-1">
+              <div className="bg-card rounded-xl p-5 mb-6">
+                <h2 className="text-lg font-bold text-white mb-3">Find Music for Your Workout</h2>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Workout Type</label>
+                    <Select value={workoutType} onValueChange={setWorkoutType}>
+                      <SelectTrigger className="bg-gray-800 border-gray-700">
+                        <SelectValue placeholder="Select workout type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="running">Running</SelectItem>
+                        <SelectItem value="cycling">Cycling</SelectItem>
+                        <SelectItem value="walking">Walking</SelectItem>
+                        <SelectItem value="hiit">HIIT</SelectItem>
+                        <SelectItem value="strength">Strength Training</SelectItem>
+                        <SelectItem value="yoga">Yoga</SelectItem>
+                        <SelectItem value="dancing">Dancing</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Intensity</label>
+                    <Select value={intensity} onValueChange={(value) => setIntensity(value as "low" | "medium" | "high")}>
+                      <SelectTrigger className="bg-gray-800 border-gray-700">
+                        <SelectValue placeholder="Select intensity" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low Intensity</SelectItem>
+                        <SelectItem value="medium">Medium Intensity</SelectItem>
+                        <SelectItem value="high">High Intensity</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Duration (minutes)</label>
+                    <Select value={duration.toString()} onValueChange={(value) => setDuration(parseInt(value))}>
+                      <SelectTrigger className="bg-gray-800 border-gray-700">
+                        <SelectValue placeholder="Select duration" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10 minutes</SelectItem>
+                        <SelectItem value="15">15 minutes</SelectItem>
+                        <SelectItem value="20">20 minutes</SelectItem>
+                        <SelectItem value="30">30 minutes</SelectItem>
+                        <SelectItem value="45">45 minutes</SelectItem>
+                        <SelectItem value="60">60 minutes</SelectItem>
+                        <SelectItem value="90">90 minutes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
               
-              <div>
-                <label className="text-sm text-gray-400 block mb-1">Intensity</label>
-                <Select value={intensity} onValueChange={(value) => setIntensity(value as "low" | "medium" | "high")}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
-                    <SelectValue placeholder="Select intensity" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low Intensity</SelectItem>
-                    <SelectItem value="medium">Medium Intensity</SelectItem>
-                    <SelectItem value="high">High Intensity</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {workoutSuggestions.length > 0 && (
+                <div className="mb-6">
+                  <h2 className="text-lg font-bold text-white mb-3">Based on Your Recent Workouts</h2>
+                  <div className="grid grid-cols-1 gap-4">
+                    {workoutSuggestions.map((suggestion, index) => (
+                      <div key={index} className="bg-card rounded-xl p-4">
+                        <h3 className="text-white font-medium mb-1">{suggestion.name}</h3>
+                        <p className="text-xs text-gray-400 mb-3">
+                          {suggestion.intensity.charAt(0).toUpperCase() + suggestion.intensity.slice(1)} intensity • {suggestion.duration} min
+                        </p>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => {
+                            setWorkoutType(suggestion.type.toLowerCase());
+                            setIntensity(suggestion.intensity as "low" | "medium" | "high");
+                            setDuration(suggestion.duration);
+                          }}
+                        >
+                          Find Music
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               <div>
-                <label className="text-sm text-gray-400 block mb-1">Duration (minutes)</label>
-                <Select value={duration.toString()} onValueChange={(value) => setDuration(parseInt(value))}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
-                    <SelectValue placeholder="Select duration" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10 minutes</SelectItem>
-                    <SelectItem value="15">15 minutes</SelectItem>
-                    <SelectItem value="20">20 minutes</SelectItem>
-                    <SelectItem value="30">30 minutes</SelectItem>
-                    <SelectItem value="45">45 minutes</SelectItem>
-                    <SelectItem value="60">60 minutes</SelectItem>
-                    <SelectItem value="90">90 minutes</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-lg font-bold text-white">Recommended Tracks</h2>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      setActiveTab("create");
+                      // Pre-select some tracks
+                      if (recommendedTracks && recommendedTracks.length > 0) {
+                        setSelectedTrackIds(recommendedTracks.slice(0, 5).map((track: any) => track.id));
+                        setPlaylistName(`${workoutType.charAt(0).toUpperCase() + workoutType.slice(1)} - ${intensity.charAt(0).toUpperCase() + intensity.slice(1)} Intensity`);
+                      }
+                    }}
+                    disabled={!recommendedTracks || recommendedTracks.length === 0}
+                  >
+                    Create Playlist
+                  </Button>
+                </div>
+                
+                {tracksLoading ? (
+                  <div className="flex justify-center py-10">
+                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+                  </div>
+                ) : recommendedTracks && recommendedTracks.length > 0 ? (
+                  <div className="space-y-2">
+                    {recommendedTracks.map((track: any) => renderTrackItem(track as TrackType))}
+                  </div>
+                ) : (
+                  <div className="bg-card/30 rounded-xl p-6 text-center">
+                    <p className="text-gray-400">No tracks found for the selected criteria</p>
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
-          
-          {workoutSuggestions.length > 0 && (
-            <div className="mb-6">
-              <h2 className="text-lg font-bold text-white mb-3">Based on Your Recent Workouts</h2>
-              <div className="grid grid-cols-1 gap-4">
-                {workoutSuggestions.map((suggestion, index) => (
-                  <div key={index} className="bg-card rounded-xl p-4">
-                    <h3 className="text-white font-medium mb-1">{suggestion.name}</h3>
-                    <p className="text-xs text-gray-400 mb-3">
-                      {suggestion.intensity.charAt(0).toUpperCase() + suggestion.intensity.slice(1)} intensity • {suggestion.duration} min
-                    </p>
+            </TabsContent>
+            
+            <TabsContent value="create" className="px-5 py-4 flex-1">
+              <div className="bg-card rounded-xl p-5 mb-6">
+                <h2 className="text-lg font-bold text-white mb-3">Create a Playlist</h2>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Playlist Name</label>
+                    <Input
+                      value={playlistName}
+                      onChange={(e) => setPlaylistName(e.target.value)}
+                      placeholder="Enter playlist name"
+                      className="bg-gray-800 border-gray-700"
+                    />
+                  </div>
+                  
+                  <Button 
+                    className="w-full bg-primary"
+                    onClick={() => createPlaylistMutation.mutate()}
+                    disabled={createPlaylistMutation.isPending || !playlistName || selectedTrackIds.length === 0}
+                  >
+                    {createPlaylistMutation.isPending ? (
+                      <span className="flex items-center">
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                        Creating...
+                      </span>
+                    ) : "Create Playlist"}
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-lg font-bold text-white">Selected Tracks ({selectedTrackIds.length})</h2>
+                  {selectedTrackIds.length > 0 && (
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => {
-                        setWorkoutType(suggestion.type.toLowerCase());
-                        setIntensity(suggestion.intensity as "low" | "medium" | "high");
-                        setDuration(suggestion.duration);
-                      }}
+                      onClick={() => setSelectedTrackIds([])}
                     >
-                      Find Music
+                      Clear All
                     </Button>
+                  )}
+                </div>
+                
+                {selectedTrackIds.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedTrackIds.map(id => {
+                      const track = [...(recommendedTracks || []), ...(searchResults || [])].find((t: any) => t.id === id);
+                      if (track) {
+                        return renderTrackItem(track as TrackType);
+                      }
+                      return null;
+                    })}
                   </div>
-                ))}
+                ) : (
+                  <div className="bg-card/30 rounded-xl p-6 text-center">
+                    <p className="text-gray-400">No tracks selected. Search or discover tracks to add to your playlist.</p>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-          
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-lg font-bold text-white">Recommended Tracks</h2>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  setActiveTab("create");
-                  // Pre-select some tracks
-                  if (recommendedTracks && recommendedTracks.length > 0) {
-                    setSelectedTrackIds(recommendedTracks.slice(0, 5).map(track => track.id));
-                    setPlaylistName(`${workoutType.charAt(0).toUpperCase() + workoutType.slice(1)} - ${intensity.charAt(0).toUpperCase() + intensity.slice(1)} Intensity`);
-                  }
-                }}
-                disabled={!recommendedTracks || recommendedTracks.length === 0}
-              >
-                Create Playlist
-              </Button>
-            </div>
-            
-            {tracksLoading ? (
-              <div className="flex justify-center py-10">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-              </div>
-            ) : recommendedTracks && recommendedTracks.length > 0 ? (
-              <div className="space-y-2">
-                {recommendedTracks.map(track => renderTrackItem(track as TrackType))}
-              </div>
-            ) : (
-              <div className="bg-card/30 rounded-xl p-6 text-center">
-                <p className="text-gray-400">No tracks found for the selected criteria</p>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-      )}
-      
-      <TabsContent value="create" className="px-5 py-4 flex-1">
-        {!isLoggedIn ? (
-          <div className="flex flex-col items-center justify-center h-full p-5">
-            <div className="bg-card rounded-xl p-6 text-center max-w-md">
-              <h2 className="text-xl font-bold text-white mb-2">Connect to Spotify</h2>
-              <p className="text-gray-400 mb-6">
-                Connect your Spotify account to create personalized workout playlists.
-              </p>
-              <Button 
-                onClick={handleSpotifyLogin} 
-                className="bg-green-500 hover:bg-green-600 text-white"
-              >
-                Connect Spotify
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="bg-card rounded-xl p-5 mb-6">
-              <h2 className="text-lg font-bold text-white mb-3">Create a Playlist</h2>
               
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-400 block mb-1">Playlist Name</label>
+              <div>
+                <div className="mb-4">
                   <Input
-                    value={playlistName}
-                    onChange={(e) => setPlaylistName(e.target.value)}
-                    placeholder="Enter playlist name"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search for tracks..."
                     className="bg-gray-800 border-gray-700"
                   />
                 </div>
                 
-                <Button 
-                  className="w-full bg-primary"
-                  onClick={() => createPlaylistMutation.mutate()}
-                  disabled={createPlaylistMutation.isPending || !playlistName || selectedTrackIds.length === 0}
-                >
-                  {createPlaylistMutation.isPending ? (
-                    <span className="flex items-center">
-                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                      Creating...
-                    </span>
-                  ) : "Create Playlist"}
-                </Button>
-              </div>
-            </div>
-            
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-bold text-white">Selected Tracks ({selectedTrackIds.length})</h2>
-                {selectedTrackIds.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setSelectedTrackIds([])}
-                  >
-                    Clear All
-                  </Button>
+                <h2 className="text-lg font-bold text-white mb-3">Search Results</h2>
+                
+                {searchLoading ? (
+                  <div className="flex justify-center py-10">
+                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+                  </div>
+                ) : searchResults && searchResults.length > 0 ? (
+                  <div className="space-y-2">
+                    {searchResults.map((track: any) => renderTrackItem(track as TrackType))}
+                  </div>
+                ) : searchQuery ? (
+                  <div className="bg-card/30 rounded-xl p-6 text-center">
+                    <p className="text-gray-400">No results found for "{searchQuery}"</p>
+                  </div>
+                ) : (
+                  <div className="bg-card/30 rounded-xl p-6 text-center">
+                    <p className="text-gray-400">Search for your favorite tracks to add to your playlist</p>
+                  </div>
                 )}
               </div>
-              
-              {selectedTrackIds.length > 0 ? (
-                <div className="space-y-2">
-                  {selectedTrackIds.map(id => {
-                    const track = [...(recommendedTracks || []), ...(searchResults || [])].find(t => t.id === id);
-                    if (track) {
-                      return renderTrackItem(track as TrackType);
-                    }
-                    return null;
-                  })}
-                </div>
-              ) : (
-                <div className="bg-card/30 rounded-xl p-6 text-center">
-                  <p className="text-gray-400">No tracks selected. Search or discover tracks to add to your playlist.</p>
-                </div>
-              )}
-            </div>
+            </TabsContent>
             
-            <div>
-              <div className="mb-4">
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for tracks..."
-                  className="bg-gray-800 border-gray-700"
-                />
-              </div>
+            <TabsContent value="playlists" className="px-5 py-4 flex-1">
+              <h2 className="text-lg font-bold text-white mb-3">Your Workout Playlists</h2>
               
-              <h2 className="text-lg font-bold text-white mb-3">Search Results</h2>
-              
-              {searchLoading ? (
+              {playlistsLoading ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
                 </div>
-              ) : searchResults && searchResults.length > 0 ? (
+              ) : spotifyPlaylists && spotifyPlaylists.length > 0 ? (
                 <div className="space-y-2">
-                  {searchResults.map(track => renderTrackItem(track as TrackType))}
-                </div>
-              ) : searchQuery ? (
-                <div className="bg-card/30 rounded-xl p-6 text-center">
-                  <p className="text-gray-400">No results found for "{searchQuery}"</p>
+                  {spotifyPlaylists.map((playlist: any) => renderPlaylistItem(playlist as PlaylistType))}
                 </div>
               ) : (
                 <div className="bg-card/30 rounded-xl p-6 text-center">
-                  <p className="text-gray-400">Search for your favorite tracks to add to your playlist</p>
+                  <p className="text-gray-400 mb-2">No workout playlists found</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setActiveTab("create")}
+                  >
+                    Create a Playlist
+                  </Button>
                 </div>
               )}
-            </div>
-          </>
-        )}
-      </TabsContent>
-      
-      <TabsContent value="playlists" className="px-5 py-4 flex-1">
-        {!isLoggedIn ? (
-          <div className="flex flex-col items-center justify-center h-full p-5">
-            <div className="bg-card rounded-xl p-6 text-center max-w-md">
-              <h2 className="text-xl font-bold text-white mb-2">Connect to Spotify</h2>
-              <p className="text-gray-400 mb-6">
-                Connect your Spotify account to see your workout playlists.
-              </p>
-              <Button 
-                onClick={handleSpotifyLogin} 
-                className="bg-green-500 hover:bg-green-600 text-white"
-              >
-                Connect Spotify
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <h2 className="text-lg font-bold text-white mb-3">Your Workout Playlists</h2>
-            
-            {playlistsLoading ? (
-              <div className="flex justify-center py-10">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-              </div>
-            ) : spotifyPlaylists && spotifyPlaylists.length > 0 ? (
-              <div className="space-y-2">
-                {spotifyPlaylists.map(playlist => renderPlaylistItem(playlist))}
-              </div>
-            ) : (
-              <div className="bg-card/30 rounded-xl p-6 text-center">
-                <p className="text-gray-400 mb-2">No workout playlists found</p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setActiveTab("create")}
-                >
-                  Create a Playlist
-                </Button>
-              </div>
-            )}
-          </>
-        )}
-      </TabsContent>
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
       
       {/* Bottom Navigation */}
       <BottomNavbar onAddClick={() => {}} />
