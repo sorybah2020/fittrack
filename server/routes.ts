@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
 import { insertWorkoutSchema } from "@shared/schema";
+import { pool } from "../db";
 
 // Middleware to check authentication
 function ensureAuthenticated(req: Request, res: Response, next: Function) {

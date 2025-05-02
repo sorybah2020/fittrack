@@ -1,37 +1,37 @@
 import { useState } from "react";
+import { Redirect } from "wouter";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Redirect } from "wouter";
-import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ActivityRings } from "@/components/ui/activity-ring";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
+// Schema for login form
 const loginSchema = z.object({
-  username: z.string().min(2, "Username must be at least 2 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+// Schema for registration form
 const registerSchema = z.object({
-  username: z.string().min(2, "Username must be at least 2 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  dailyMoveGoal: z.coerce.number().min(1, "Move goal is required"),
-  dailyExerciseGoal: z.coerce.number().min(1, "Exercise goal is required"),
-  dailyStandGoal: z.coerce.number().min(1, "Stand goal is required"),
+  dailyMoveGoal: z.coerce.number().min(1, "Daily move goal required").default(450),
+  dailyExerciseGoal: z.coerce.number().min(1, "Daily exercise goal required").default(30),
+  dailyStandGoal: z.coerce.number().min(1, "Daily stand goal required").default(12),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
+  const { user, loginMutation, registerMutation } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("login");
-  const { user, isLoading, loginMutation, registerMutation } = useAuth();
-
+  
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -39,7 +39,7 @@ export default function AuthPage() {
       password: "",
     },
   });
-
+  
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -50,255 +50,253 @@ export default function AuthPage() {
       dailyStandGoal: 12,
     },
   });
-
+  
   function onLoginSubmit(data: LoginFormValues) {
     loginMutation.mutate(data, {
       onError: (error) => {
-        loginForm.setError("root", {
-          message: error.message || "Login failed. Please check your credentials.",
+        loginForm.setError("root", { 
+          message: error.message || "Login failed. Please check your credentials."
         });
-      },
+      }
     });
   }
-
+  
   function onRegisterSubmit(data: RegisterFormValues) {
     registerMutation.mutate(data, {
       onError: (error) => {
-        registerForm.setError("root", {
-          message: error.message || "Registration failed. Please try a different username.",
+        registerForm.setError("root", { 
+          message: error.message || "Registration failed. Username may already be taken."
         });
-      },
+      }
     });
   }
-
-  // If already logged in, redirect to home
-  if (user && !isLoading) {
+  
+  // If user is already logged in, redirect to home
+  if (user) {
     return <Redirect to="/" />;
   }
-
-  // Show loading while checking auth state
-  if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
+  
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-gray-950 to-black text-white">
-      {/* Form Side */}
-      <div className="w-full lg:w-1/2 p-6 flex items-center justify-center">
-        <Card className="w-full max-w-md border-gray-800 shadow-lg bg-card/50 backdrop-blur-md">
-          <CardHeader>
-            <CardTitle className="text-center">
-              <span className="text-3xl font-bold tracking-tight bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text text-transparent">
-                Fitness Tracker
-              </span>
-            </CardTitle>
-            <CardDescription className="text-center text-gray-400 mt-2">
-              Track your workouts and stay healthy
-            </CardDescription>
-          </CardHeader>
+    <div className="flex min-h-screen bg-background">
+      {/* Auth Form Section */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold tracking-tight text-primary mb-2">Fitness Tracker</h1>
+            <p className="text-muted-foreground">Track your workouts and fitness goals</p>
+          </div>
           
-          <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 mb-4 w-full">
-              <TabsTrigger value="login" className="data-[state=active]:bg-card/60">Log In</TabsTrigger>
-              <TabsTrigger value="register" className="data-[state=active]:bg-card/60">Register</TabsTrigger>
+          <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-2 w-full">
+              <TabsTrigger value="login">Login</TabsTrigger>
+              <TabsTrigger value="register">Register</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="login">
-              <CardContent>
-                <Form {...loginForm}>
-                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-                    <FormField
-                      control={loginForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="username" {...field} className="bg-background/40" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={loginForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="••••••" {...field} className="bg-background/40" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full mt-6 bg-gradient-to-r from-pink-500 to-orange-500"
-                      disabled={loginMutation.isPending}
-                    >
-                      {loginMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
-                      Log In
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-              <CardFooter className="flex flex-col">
-                <p className="text-sm text-gray-500 text-center">
-                  Don't have an account?{" "}
-                  <button 
-                    onClick={() => setActiveTab("register")} 
-                    className="text-accent hover:underline"
+            <TabsContent value="login" className="mt-6">
+              <Form {...loginForm}>
+                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
+                  <FormField
+                    control={loginForm.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your username" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={loginForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="Enter your password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {loginForm.formState.errors.root && (
+                    <div className="text-destructive text-sm">
+                      {loginForm.formState.errors.root.message}
+                    </div>
+                  )}
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={loginMutation.isPending}
                   >
-                    Sign up
-                  </button>
-                </p>
-              </CardFooter>
+                    {loginMutation.isPending ? "Logging in..." : "Log in"}
+                  </Button>
+                  
+                  <div className="text-center text-sm text-muted-foreground">
+                    Don't have an account?{" "}
+                    <button 
+                      type="button"
+                      className="text-primary hover:underline" 
+                      onClick={() => setActiveTab("register")}
+                    >
+                      Sign up
+                    </button>
+                  </div>
+                </form>
+              </Form>
             </TabsContent>
             
-            <TabsContent value="register">
-              <CardContent>
-                <Form {...registerForm}>
-                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+            <TabsContent value="register" className="mt-6">
+              <Form {...registerForm}>
+                <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                  <FormField
+                    control={registerForm.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Choose a username" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={registerForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="Choose a password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="grid grid-cols-3 gap-4">
                     <FormField
                       control={registerForm.control}
-                      name="username"
+                      name="dailyMoveGoal"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Username</FormLabel>
+                          <FormLabel>Move Goal (min)</FormLabel>
                           <FormControl>
-                            <Input placeholder="username" {...field} className="bg-background/40" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="••••••" {...field} className="bg-background/40" />
+                            <Input type="number" min={1} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     
-                    <div className="grid grid-cols-3 gap-4">
-                      <FormField
-                        control={registerForm.control}
-                        name="dailyMoveGoal"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs block truncate">Move Goal</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} className="bg-background/40" />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="dailyExerciseGoal"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs block truncate">Exercise (min)</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} className="bg-background/40" />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="dailyStandGoal"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs block truncate">Stand (hrs)</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} className="bg-background/40" />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+                    <FormField
+                      control={registerForm.control}
+                      name="dailyExerciseGoal"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Exercise (min)</FormLabel>
+                          <FormControl>
+                            <Input type="number" min={1} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={registerForm.control}
+                      name="dailyStandGoal"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Stand (hours)</FormLabel>
+                          <FormControl>
+                            <Input type="number" min={1} max={24} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  {registerForm.formState.errors.root && (
+                    <div className="text-destructive text-sm">
+                      {registerForm.formState.errors.root.message}
                     </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full mt-6 bg-gradient-to-r from-pink-500 to-orange-500"
-                      disabled={registerMutation.isPending}
-                    >
-                      {registerMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
-                      Sign Up
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-              <CardFooter className="flex flex-col">
-                <p className="text-sm text-gray-500 text-center">
-                  Already have an account?{" "}
-                  <button 
-                    onClick={() => setActiveTab("login")} 
-                    className="text-accent hover:underline"
+                  )}
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full mt-4" 
+                    disabled={registerMutation.isPending}
                   >
-                    Log in
-                  </button>
-                </p>
-              </CardFooter>
+                    {registerMutation.isPending ? "Creating account..." : "Create account"}
+                  </Button>
+                  
+                  <div className="text-center text-sm text-muted-foreground">
+                    Already have an account?{" "}
+                    <button 
+                      type="button"
+                      className="text-primary hover:underline" 
+                      onClick={() => setActiveTab("login")}
+                    >
+                      Log in
+                    </button>
+                  </div>
+                </form>
+              </Form>
             </TabsContent>
           </Tabs>
-        </Card>
+        </div>
       </div>
       
-      {/* Hero Side */}
-      <div className="w-full lg:w-1/2 bg-gradient-to-br from-gray-900 via-gray-900 to-black hidden lg:flex items-center justify-center p-12">
-        <div className="max-w-xl text-center">
-          <div className="flex justify-center mb-6">
-            <ActivityRings
-              moveProgress={85}
-              exerciseProgress={75}
-              standProgress={65}
-              size="lg"
-            />
-          </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Track Your Fitness Journey</h2>
-          <p className="text-gray-300 mb-8">
-            Monitor your daily activity, track workouts, and achieve your fitness goals with our
-            comprehensive fitness tracking application.
-          </p>
-          <div className="flex justify-center gap-6 text-center">
-            <div>
-              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#FF453A] to-[#FF9F0A] mx-auto flex items-center justify-center mb-3">
-                <span className="text-white font-bold text-lg">1</span>
+      {/* Hero Section */}
+      <div className="hidden md:flex flex-1 bg-gradient-to-r from-gray-900 to-black p-12 relative overflow-hidden items-center justify-center">
+        <div className="absolute inset-0 bg-[url('/images/fitness-bg.jpg')] bg-center bg-cover opacity-20" />
+        <div className="relative z-10 text-white max-w-md">
+          <h2 className="text-5xl font-bold mb-8">Track Your Fitness Journey</h2>
+          <ul className="space-y-6">
+            <li className="flex items-start">
+              <div className="rounded-full bg-primary w-8 h-8 flex items-center justify-center mr-4 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
               </div>
-              <p className="text-sm text-gray-300">Set personal goals</p>
-            </div>
-            <div>
-              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#32D74B] to-[#30D158] mx-auto flex items-center justify-center mb-3">
-                <span className="text-white font-bold text-lg">2</span>
+              <div>
+                <h3 className="text-lg font-semibold mb-1">Activity Rings</h3>
+                <p className="text-gray-300">Monitor your daily move, exercise, and stand goals with beautiful visualizations.</p>
               </div>
-              <p className="text-sm text-gray-300">Track your workouts</p>
-            </div>
-            <div>
-              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#64D2FF] to-[#5AC8F5] mx-auto flex items-center justify-center mb-3">
-                <span className="text-white font-bold text-lg">3</span>
+            </li>
+            <li className="flex items-start">
+              <div className="rounded-full bg-primary w-8 h-8 flex items-center justify-center mr-4 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
               </div>
-              <p className="text-sm text-gray-300">Monitor progress</p>
-            </div>
-          </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-1">Workout Tracking</h3>
+                <p className="text-gray-300">Log and analyze your workouts, monitor your progress, and achieve your fitness goals.</p>
+              </div>
+            </li>
+            <li className="flex items-start">
+              <div className="rounded-full bg-primary w-8 h-8 flex items-center justify-center mr-4 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-1">Badges & Achievements</h3>
+                <p className="text-gray-300">Earn badges for consistency, milestone achievements, and special challenges.</p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

@@ -38,8 +38,8 @@ export function setupAuth(app: Express) {
     saveUninitialized: false,
     store: new PostgresSessionStore({
       pool,
-      tableName: 'sessions',
-      createTableIfMissing: true
+      tableName: 'session', // Use the same table name that's already set up
+      createTableIfMissing: false // Don't try to create the table again
     }),
     cookie: {
       secure: process.env.NODE_ENV === "production",
