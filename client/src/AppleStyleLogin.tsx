@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, MouseEvent } from "react";
 import { useLocation } from "wouter";
 
 export default function AppleStyleLogin() {
@@ -59,8 +59,10 @@ export default function AppleStyleLogin() {
     }
   };
 
-  const handleRegister = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleRegister = async (e?: FormEvent | MouseEvent) => {
+    if (e && 'preventDefault' in e) {
+      e.preventDefault();
+    }
     setError("");
     setLoading(true);
 
