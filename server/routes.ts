@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
+import { setupSpotifyRoutes } from "./spotify";
 import { z } from "zod";
 import { insertWorkoutSchema } from "@shared/schema";
 import { pool } from "../db";
@@ -18,6 +19,9 @@ function ensureAuthenticated(req: Request, res: Response, next: Function) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication with Passport.js
   setupAuth(app);
+  
+  // Set up Spotify integration
+  setupSpotifyRoutes(app);
 
   // User routes - rename to use same endpoint naming as setupAuth (/api/user)
   app.get('/api/user', ensureAuthenticated, (req, res) => {

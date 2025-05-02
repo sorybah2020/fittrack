@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { PlayCircle } from "lucide-react";
+import { PlayCircle, Music, Headphones } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DateSelector } from "@/components/DateSelector";
 import { ActivitySummary } from "@/components/ActivitySummary";
@@ -212,6 +212,47 @@ export default function Dashboard() {
               </div>
               <h3 className="text-white font-medium">Quick workout videos from Chloe Ting</h3>
               <p className="text-xs text-gray-400">Access full-length workout videos to follow along</p>
+            </Link>
+          </div>
+        </div>
+      </div>
+      
+      {/* Workout Music Section */}
+      <div className="px-5 mb-4">
+        <div className="bg-card rounded-2xl overflow-hidden">
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-sm font-medium text-white/80">Workout Music</h2>
+              <Link href="/workout-music" className="text-xs text-primary">See All</Link>
+            </div>
+            
+            <Link href="/workout-music" className="block">
+              <div className="flex">
+                <div className="flex-1">
+                  <h3 className="text-white font-medium mb-1">Create personalized workout playlists</h3>
+                  <p className="text-xs text-gray-400 mb-3">Generate music that matches your workout intensity with Spotify</p>
+                  
+                  <div className="flex space-x-2">
+                    <div className="bg-green-500/30 text-green-400 text-xs font-medium py-1 px-2 rounded-full flex items-center">
+                      <Headphones className="h-3 w-3 mr-1" />
+                      Running
+                    </div>
+                    <div className="bg-blue-500/30 text-blue-400 text-xs font-medium py-1 px-2 rounded-full flex items-center">
+                      <Headphones className="h-3 w-3 mr-1" />
+                      HIIT
+                    </div>
+                    <div className="bg-purple-500/30 text-purple-400 text-xs font-medium py-1 px-2 rounded-full flex items-center">
+                      <Headphones className="h-3 w-3 mr-1" />
+                      Yoga
+                    </div>
+                  </div>
+                </div>
+                <div className="ml-3 flex-shrink-0">
+                  <div className="w-16 h-16 bg-green-500/20 rounded-xl flex items-center justify-center">
+                    <Music className="h-8 w-8 text-green-500" />
+                  </div>
+                </div>
+              </div>
             </Link>
           </div>
         </div>
