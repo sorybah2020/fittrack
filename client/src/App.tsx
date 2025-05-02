@@ -8,17 +8,17 @@ import WorkoutVideos from "@/pages/WorkoutVideos";
 import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
-// import AuthPage from "@/pages/auth-page";
-import SimpleAuthPage from "./SimpleAuthPage";
+import AuthPage from "@/pages/auth-page";
+import AppleStyleLogin from "./AppleStyleLogin";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
 import { AuthProvider } from "./hooks/use-auth";
 
 function App() {
-  // For debugging purposes, temporarily bypass the entire app and just show the simple auth page
-  return <SimpleAuthPage />;
+  // Use our Apple-style login for better UX
+  return <AppleStyleLogin />;
   
-  // Original app structure - commented out temporarily for debugging
+  // Original app structure - commented out temporarily while fixing auth issues
   /*
   return (
     <QueryClientProvider client={queryClient}>
