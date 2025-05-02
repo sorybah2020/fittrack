@@ -11,6 +11,7 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
+  redirectOnAuth: boolean = true
 ): Promise<Response> {
   const res = await fetch(url, {
     method,
@@ -19,11 +20,17 @@ export async function apiRequest(
     credentials: "include",
   });
 
+  // Handle auth errors
+  if (res.status === 401 && redirectOnAuth && !url.includes('/api/auth/')) {
+    window.location.href = "/login";
+    throw new Error("Unauthorized. Redirecting to login...");
+  }
+
   await throwIfResNotOk(res);
   return res;
 }
 
-type UnauthorizedBehavior = "returnNull" | "throw";
+type UnauthorizedBehavior = "returnNull" | "throw" | "redirect";
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
@@ -33,8 +40,14 @@ export const getQueryFn: <T>(options: {
       credentials: "include",
     });
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
+    if (res.status === 401) {
+      if (unauthorizedBehavior === "returnNull") {
+        return null;
+      } else if (unauthorizedBehavior === "redirect") {
+        // Redirect to login page if not authenticated
+        window.location.href = "/login";
+        return null;
+      }
     }
 
     await throwIfResNotOk(res);
@@ -44,7 +57,7 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
+      queryFn: getQueryFn({ on401: "redirect" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
