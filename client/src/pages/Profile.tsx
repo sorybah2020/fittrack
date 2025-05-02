@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useLocation } from "wouter";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
@@ -44,7 +44,6 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function Profile() {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false);
-  const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   
   const { data: user, isLoading } = useQuery({
@@ -68,7 +67,7 @@ export default function Profile() {
   });
   
   // When user data is loaded, update form values
-  useState(() => {
+  useEffect(() => {
     if (user) {
       form.reset({
         username: user.username || "",
@@ -79,7 +78,7 @@ export default function Profile() {
         dailyStandGoal: user.dailyStandGoal ? user.dailyStandGoal.toString() : "12",
       });
     }
-  });
+  }, [user, form]);
   
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormValues) => {
@@ -105,15 +104,7 @@ export default function Profile() {
     updateProfileMutation.mutate(data);
   }
   
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
-    },
-    onSuccess: () => {
-      queryClient.clear();
-      navigate('/login');
-    },
-  });
+  const { logoutMutation } = useAuth();
   
   function handleLogout() {
     logoutMutation.mutate();

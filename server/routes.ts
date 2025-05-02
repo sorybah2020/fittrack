@@ -1,51 +1,9 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
-import bcrypt from "bcrypt";
-import { pool } from "@db/index";
+import { setupAuth } from "./auth";
 import { z } from "zod";
-import { insertUserSchema, insertWorkoutSchema } from "@shared/schema";
-import { json } from "express";
-
-// Passport configuration
-passport.use(new LocalStrategy(
-  async (username, password, done) => {
-    try {
-      const user = await storage.getUserByUsername(username);
-      
-      if (!user) {
-        return done(null, false, { message: "Incorrect username or password" });
-      }
-      
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      
-      if (!isPasswordValid) {
-        return done(null, false, { message: "Incorrect username or password" });
-      }
-      
-      return done(null, user);
-    } catch (error) {
-      return done(error);
-    }
-  }
-));
-
-passport.serializeUser((user: any, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id: number, done) => {
-  try {
-    const user = await storage.getUserById(id);
-    done(null, user);
-  } catch (error) {
-    done(error);
-  }
-});
+import { insertWorkoutSchema } from "@shared/schema";
 
 // Middleware to check authentication
 function ensureAuthenticated(req: Request, res: Response, next: Function) {
@@ -57,85 +15,19 @@ function ensureAuthenticated(req: Request, res: Response, next: Function) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  const PgSession = connectPgSimple(session);
-  
-  // Session middleware
-  app.use(session({
-    store: new PgSession({
-      pool,
-      tableName: 'session',
-      createTableIfMissing: true
-    }),
-    secret: process.env.SESSION_SECRET || 'fitness-app-secret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      secure: process.env.NODE_ENV === 'production'
-    }
-  }));
-  
-  // Initialize passport
-  app.use(passport.initialize());
-  app.use(passport.session());
-  
-  // Auth routes
-  app.post('/api/register', async (req, res) => {
-    try {
-      const userData = insertUserSchema.parse(req.body);
-      
-      // Check if username already exists
-      const existingUser = await storage.getUserByUsername(userData.username);
-      if (existingUser) {
-        return res.status(400).json({ message: "Username already exists" });
-      }
-      
-      const newUser = await storage.createUser(userData);
-      
-      // Auto-login after registration
-      req.login(newUser, (err) => {
-        if (err) {
-          return res.status(500).json({ message: "Error during login after registration" });
-        }
-        
-        // Remove password from response
-        const { password, ...userWithoutPassword } = newUser;
-        return res.status(201).json(userWithoutPassword);
-      });
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ errors: error.errors });
-      }
-      
-      console.error('Error registering user:', error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
+  // Set up authentication with Passport.js
+  setupAuth(app);
+
+  // User routes - rename to use same endpoint naming as setupAuth (/api/user)
+  app.get('/api/user', ensureAuthenticated, (req, res) => {
+    // Password is already removed in setupAuth's /api/user route,
+    // but we're keeping the route here for clarity with our existing routes
+    const userResponse = { ...req.user };
+    delete (userResponse as any).password;
+    res.json(userResponse);
   });
   
-  app.post('/api/login', passport.authenticate('local'), (req, res) => {
-    // Remove password from response
-    const { password, ...userWithoutPassword } = req.user as any;
-    res.json(userWithoutPassword);
-  });
-  
-  app.post('/api/logout', (req, res) => {
-    req.logout((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Error during logout" });
-      }
-      
-      res.json({ message: "Logged out successfully" });
-    });
-  });
-  
-  // User routes
-  app.get('/api/users/me', ensureAuthenticated, (req, res) => {
-    // Remove password from response
-    const { password, ...userWithoutPassword } = req.user as any;
-    res.json(userWithoutPassword);
-  });
-  
-  app.patch('/api/users/me', ensureAuthenticated, async (req, res) => {
+  app.patch('/api/user', ensureAuthenticated, async (req, res) => {
     try {
       const userId = (req.user as any).id;
       const userData = req.body;
@@ -147,8 +39,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Remove password from response
-      const { password, ...userWithoutPassword } = updatedUser;
-      res.json(userWithoutPassword);
+      const userResponse = { ...updatedUser };
+      delete (userResponse as any).password;
+      res.json(userResponse);
     } catch (error) {
       console.error('Error updating user:', error);
       return res.status(500).json({ message: "Internal server error" });

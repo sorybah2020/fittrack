@@ -1,30 +1,28 @@
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useAuth } from "@/hooks/use-auth";
+import { z } from "zod";
 import { Redirect } from "wouter";
+import { Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActivityRings } from "@/components/ui/activity-ring";
-import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().min(2, "Username must be at least 2 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const registerSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().min(2, "Username must be at least 2 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  dailyMoveGoal: z.coerce.number().positive().default(500),
-  dailyExerciseGoal: z.coerce.number().positive().default(30),
-  dailyStandGoal: z.coerce.number().positive().default(12),
+  dailyMoveGoal: z.coerce.number().min(1, "Move goal is required"),
+  dailyExerciseGoal: z.coerce.number().min(1, "Exercise goal is required"),
+  dailyStandGoal: z.coerce.number().min(1, "Stand goal is required"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -32,13 +30,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>("login");
-  const { user, loginMutation, registerMutation } = useAuth();
-  const { toast } = useToast();
-
-  // If user is already logged in, redirect to dashboard
-  if (user) {
-    return <Redirect to="/" />;
-  }
+  const { user, isLoading, loginMutation, registerMutation } = useAuth();
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -53,7 +45,7 @@ export default function AuthPage() {
     defaultValues: {
       username: "",
       password: "",
-      dailyMoveGoal: 500,
+      dailyMoveGoal: 450,
       dailyExerciseGoal: 30,
       dailyStandGoal: 12,
     },
@@ -62,10 +54,8 @@ export default function AuthPage() {
   function onLoginSubmit(data: LoginFormValues) {
     loginMutation.mutate(data, {
       onError: (error) => {
-        toast({
-          title: "Login failed",
-          description: error.message,
-          variant: "destructive",
+        loginForm.setError("root", {
+          message: error.message || "Login failed. Please check your credentials.",
         });
       },
     });
@@ -74,17 +64,29 @@ export default function AuthPage() {
   function onRegisterSubmit(data: RegisterFormValues) {
     registerMutation.mutate(data, {
       onError: (error) => {
-        toast({
-          title: "Registration failed",
-          description: error.message,
-          variant: "destructive",
+        registerForm.setError("root", {
+          message: error.message || "Registration failed. Please try a different username.",
         });
       },
     });
   }
 
+  // If already logged in, redirect to home
+  if (user && !isLoading) {
+    return <Redirect to="/" />;
+  }
+
+  // Show loading while checking auth state
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-gray-950 to-black text-white">
       {/* Form Side */}
       <div className="w-full lg:w-1/2 p-6 flex items-center justify-center">
         <Card className="w-full max-w-md border-gray-800 shadow-lg bg-card/50 backdrop-blur-md">
