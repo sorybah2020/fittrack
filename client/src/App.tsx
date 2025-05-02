@@ -8,12 +8,18 @@ import WorkoutVideos from "@/pages/WorkoutVideos";
 import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
-import AuthPage from "@/pages/auth-page";
+// import AuthPage from "@/pages/auth-page";
+import SimpleAuthPage from "./SimpleAuthPage";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
 import { AuthProvider } from "./hooks/use-auth";
 
 function App() {
+  // For debugging purposes, temporarily bypass the entire app and just show the simple auth page
+  return <SimpleAuthPage />;
+  
+  // Original app structure - commented out temporarily for debugging
+  /*
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -32,6 +38,7 @@ function App() {
       </AuthProvider>
     </QueryClientProvider>
   );
+  */
 }
 
 export default App;
