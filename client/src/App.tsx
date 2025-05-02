@@ -20,7 +20,7 @@ function useAuth() {
     // Check if user is authenticated
     async function checkAuth() {
       try {
-        const response = await fetch('/api/users/me');
+        const response = await fetch('/api/user');
         if (response.ok) {
           setIsAuthenticated(true);
         } else {

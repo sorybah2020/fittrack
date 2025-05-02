@@ -47,7 +47,7 @@ export default function Profile() {
   const [, navigate] = useLocation();
   
   const { data: user, isLoading } = useQuery({
-    queryKey: ['/api/users/me'],
+    queryKey: ['/api/user'],
   });
   
   const { data: stats } = useQuery({
@@ -92,11 +92,11 @@ export default function Profile() {
         dailyStandGoal: parseInt(data.dailyStandGoal),
       };
       
-      const response = await apiRequest("PATCH", "/api/users/me", profileData);
+      const response = await apiRequest("PATCH", "/api/user", profileData);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users/me'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
     },
   });
   
@@ -311,6 +311,25 @@ export default function Profile() {
                 </Button>
               </form>
             </Form>
+            
+            {/* Logout Button */}
+            <div className="mt-8">
+              <Button 
+                variant="outline" 
+                className="w-full text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+              >
+                {logoutMutation.isPending ? (
+                  "Logging out..."
+                ) : (
+                  <span className="flex items-center">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </span>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
