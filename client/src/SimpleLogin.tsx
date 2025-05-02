@@ -1,19 +1,25 @@
 import { FormEvent, useState } from "react";
 
-export default function AppleIDLogin() {
+export default function SimpleLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
-  const [isSignupMode, setIsSignupMode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isSignupMode, setIsSignupMode] = useState(false);
 
-  const handleLogin = async (e: FormEvent) => {
+  const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    if (isSignupMode) {
+      await handleRegister();
+    } else {
+      await handleLogin();
+    }
+  };
+
+  const handleLogin = async () => {
     try {
       console.log("Attempting login for user:", username);
       
@@ -57,9 +63,6 @@ export default function AppleIDLogin() {
   };
 
   const handleRegister = async () => {
-    setError("");
-    setLoading(true);
-
     try {
       console.log("Attempting registration for user:", username);
       
@@ -130,7 +133,7 @@ export default function AppleIDLogin() {
         flexDirection: 'column',
         alignItems: 'center'
       }}>
-        {/* Apple ID logo - colorful circles around apple icon */}
+        {/* Logo with colorful circles */}
         <div style={{
           marginBottom: '16px',
           position: 'relative',
@@ -159,7 +162,7 @@ export default function AppleIDLogin() {
           margin: '0 0 4px 0',
           color: '#1D1D1F'
         }}>
-          Apple ID
+          {isSignupMode ? "Create Account" : "Sign In"}
         </h2>
         
         <p style={{
@@ -168,7 +171,7 @@ export default function AppleIDLogin() {
           margin: '0 0 25px 0',
           textAlign: 'center'
         }}>
-          Manage to Apple Account
+          {isSignupMode ? "Sign up for Fitness Tracker" : "Sign in to Fitness Tracker"}
         </p>
         
         {error && (
@@ -186,13 +189,13 @@ export default function AppleIDLogin() {
           </div>
         )}
         
-        <form onSubmit={handleLogin} style={{ width: '100%' }}>
-          <div style={{ marginBottom: '10px', position: 'relative' }}>
+        <form onSubmit={handleFormSubmit} style={{ width: '100%' }}>
+          <div style={{ marginBottom: '15px', position: 'relative' }}>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Apple ID"
+              placeholder="Username"
               style={{
                 width: '100%',
                 padding: '12px 35px 12px 12px',
@@ -224,138 +227,53 @@ export default function AppleIDLogin() {
             )}
           </div>
           
-          {showPassword && (
-            <div style={{ marginBottom: '10px' }}>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #d2d2d7',
-                  borderRadius: '8px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-          )}
-          
-          <button 
-            type="button"
-            onClick={() => setShowPassword(true)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              marginBottom: '10px',
-              backgroundColor: '#E5E5EA',
-              color: '#000',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '15px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              display: showPassword ? 'none' : 'block',
-              textAlign: 'center'
-            }}
-          >
-            Continue with Password
-          </button>
-          
-          {showPassword && (
-            <button 
-              type="submit"
-              disabled={loading || !username || !password}
+          <div style={{ marginBottom: '20px' }}>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
               style={{
                 width: '100%',
                 padding: '12px',
-                marginBottom: '10px',
-                backgroundColor: '#0070F3',
-                color: '#fff',
-                border: 'none',
+                border: '1px solid #d2d2d7',
                 borderRadius: '8px',
-                fontSize: '15px',
-                fontWeight: '500',
-                cursor: (loading || !username || !password) ? 'default' : 'pointer',
-                opacity: (loading || !username || !password) ? 0.7 : 1,
-                textAlign: 'center'
+                fontSize: '16px',
+                boxSizing: 'border-box'
               }}
-            >
-              {loading ? "Signing in..." : "Sign In"}
-            </button>
-          )}
+            />
+          </div>
           
           <button 
-            type="button"
+            type="submit"
+            disabled={loading || !username || !password}
             style={{
               width: '100%',
               padding: '12px',
-              marginBottom: '10px',
-              backgroundColor: '#E5E5EA',
-              color: '#000',
+              marginBottom: '15px',
+              backgroundColor: '#0070F3',
+              color: '#fff',
               border: 'none',
               borderRadius: '8px',
               fontSize: '15px',
               fontWeight: '500',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
+              cursor: (loading || !username || !password) ? 'default' : 'pointer',
+              opacity: (loading || !username || !password) ? 0.7 : 1,
+              textAlign: 'center'
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-            Sign in with iPhone
+            {loading ? "Processing..." : isSignupMode ? "Create Account" : "Sign In"}
           </button>
-          
-          <p style={{
-            fontSize: '12px',
-            color: '#86868b',
-            textAlign: 'center',
-            margin: '0'
-          }}>
-            Requires iOS 17 or later
-          </p>
-
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: '15px'
-          }}>
-            <input
-              type="checkbox"
-              id="remember-me"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              style={{ marginRight: '6px' }}
-            />
-            <label htmlFor="remember-me" style={{ fontSize: '13px', color: '#86868b' }}>
-              Remember Me
-            </label>
-          </div>
         </form>
         
         <div style={{ 
-          marginTop: '20px', 
-          borderTop: '1px solid #d2d2d7',
-          paddingTop: '20px',
-          width: '100%'
+          marginTop: '10px',
+          width: '100%',
+          textAlign: 'center'
         }}>
           <button 
             type="button"
-            onClick={() => {
-              if (username && password) {
-                handleRegister();
-              } else {
-                setError("Please enter a username and password to register");
-                setShowPassword(true);
-              }
-            }}
+            onClick={() => setIsSignupMode(!isSignupMode)}
             style={{
               backgroundColor: 'transparent',
               color: '#0070F3',
@@ -363,10 +281,12 @@ export default function AppleIDLogin() {
               fontSize: '14px',
               fontWeight: '500',
               cursor: 'pointer',
-              padding: 0
+              padding: '8px 16px'
             }}
           >
-            Create New Apple ID
+            {isSignupMode 
+              ? "Already have an account? Sign In" 
+              : "Don't have an account? Sign Up"}
           </button>
         </div>
       </div>
