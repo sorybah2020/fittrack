@@ -55,8 +55,14 @@ export default function BasicLogin() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Redirect to home page
-      window.location.href = "/";
+      // Since we're using a simplified login component, we need to load the full app structure
+      // We'll reload the entire page with a special parameter to show the full app
+      window.location.href = "/?login_time=" + new Date().getTime();
+      
+      // Force a full page reload to ensure session changes are applied
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
