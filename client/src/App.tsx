@@ -15,16 +15,13 @@ import { ProtectedRoute } from "./lib/protected-route";
 import { AuthProvider } from "./hooks/use-auth";
 
 function App() {
-  // Use our Apple-style login for better UX
-  return <AppleStyleLogin />;
-  
-  // Original app structure - commented out temporarily while fixing auth issues
-  /*
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Switch>
-          <Route path="/auth" component={AuthPage} />
+          <Route path="/auth">
+            <AppleStyleLogin />
+          </Route>
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/workouts/:id" component={Workouts} />
           <ProtectedRoute path="/workouts" component={Workouts} />
@@ -38,7 +35,6 @@ function App() {
       </AuthProvider>
     </QueryClientProvider>
   );
-  */
 }
 
 export default App;
