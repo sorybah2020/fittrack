@@ -8,7 +8,7 @@ import WorkoutVideos from "@/pages/WorkoutVideos";
 import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
-import AppleStyleLogin from "./AppleStyleLogin";
+import StableLogin from "./StableLogin";
 import NotFound from "@/pages/not-found";
 import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "./hooks/use-auth";
@@ -31,7 +31,7 @@ function ProtectedRoute({
           <Loader2 className="h-8 w-8 animate-spin text-red-500" />
         </div>
       ) : !user ? (
-        <AppleStyleLogin />
+        <StableLogin />
       ) : (
         <Component />
       )}
@@ -45,7 +45,7 @@ function App() {
       <AuthProvider>
         <Switch>
           <Route path="/auth">
-            <AppleStyleLogin />
+            <StableLogin />
           </Route>
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/workouts/:id" component={Workouts} />
