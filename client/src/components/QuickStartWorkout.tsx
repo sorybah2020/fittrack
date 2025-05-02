@@ -41,13 +41,13 @@ export function QuickStartWorkout({ workoutTypes }: QuickStartWorkoutProps) {
     },
     {
       name: "Quick HIIT Session",
-      type: 4, // HIIT workoutTypeId (assumed)
+      type: 2, // Cycling workoutTypeId (for HIIT)
       duration: 15,
       intensity: "high",
     },
     {
       name: "Quick Yoga Flow",
-      type: 5, // Yoga workoutTypeId (assumed)
+      type: 3, // Swimming workoutTypeId (for Yoga)
       duration: 30,
       intensity: "low",
     },
@@ -126,27 +126,31 @@ export function QuickStartWorkout({ workoutTypes }: QuickStartWorkoutProps) {
           if (!workoutType) return null;
           
           return (
-            <Card key={index} className="bg-card border-gray-800 hover:bg-card/80 transition-colors">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center">
+            <div key={index} className="bg-[#1c1c1e] rounded-xl overflow-hidden">
+              <div className="p-5">
+                <h3 className="text-2xl font-bold text-white mb-2">
                   <span 
-                    className="mr-2 flex h-8 w-8 items-center justify-center rounded-full"
-                    style={{ backgroundColor: workoutType.color + "20", color: workoutType.color }}
+                    className="text-base font-normal mr-2 block"
+                    style={{ color: workoutType.color }}
                   >
-                    <span className="text-xl">{workoutType.icon}</span>
+                    {workoutType.name.toLowerCase()}
                   </span>
                   {workout.name}
-                </CardTitle>
-                <CardDescription>
+                </h3>
+                <p className="text-gray-400 text-sm mb-4">
                   {workoutType.name} • {formatDuration(workout.duration)} • {workout.intensity} intensity
-                </CardDescription>
-              </CardHeader>
-              <CardFooter className="pt-2">
+                </p>
+                
                 <Button 
                   onClick={() => startQuickWorkout(workout)} 
                   disabled={isStarting !== undefined}
-                  className="w-full"
-                  variant="default"
+                  className="w-full bg-red-500 hover:bg-red-600 text-white"
+                  style={{ 
+                    backgroundColor: isStarting === workout.type ? "#ff3b30aa" : "#ff3b30",
+                    height: "44px",
+                    fontSize: "16px",
+                    fontWeight: "500"
+                  }}
                 >
                   {isStarting === workout.type ? (
                     <>
@@ -157,8 +161,8 @@ export function QuickStartWorkout({ workoutTypes }: QuickStartWorkoutProps) {
                     "Start Now"
                   )}
                 </Button>
-              </CardFooter>
-            </Card>
+              </div>
+            </div>
           );
         })}
       </div>
