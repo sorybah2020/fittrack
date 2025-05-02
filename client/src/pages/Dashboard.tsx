@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { PlayCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DateSelector } from "@/components/DateSelector";
 import { ActivitySummary } from "@/components/ActivitySummary";
@@ -10,6 +11,7 @@ import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
 import { Activity, Workout, WeeklyActivity } from "@/lib/fitness-types";
 import { Link } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -17,9 +19,7 @@ export default function Dashboard() {
   
   const formattedDate = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
   
-  const { data: user } = useQuery({
-    queryKey: ['/api/users/me'],
-  });
+  const { user } = useAuth();
   
   const { data: activity } = useQuery({
     queryKey: ['/api/activities', formattedDate],
@@ -185,25 +185,34 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Trainer Tips */}
+      {/* Workout Videos Section */}
       <div className="px-5 mb-4">
         <div className="bg-card rounded-2xl overflow-hidden">
           <div className="p-4">
             <div className="flex justify-between items-center mb-3">
-              <h2 className="text-sm font-medium text-white/80">Trainer Tips</h2>
+              <h2 className="text-sm font-medium text-white/80">Workout Videos</h2>
+              <Link href="/workout-videos" className="text-xs text-primary">See All</Link>
             </div>
             
-            <div className="flex">
-              <div className="flex-1">
-                <h3 className="text-white font-medium mb-1">How to mix up your routine for better results</h3>
-                <p className="text-xs text-gray-400">with Fitness+ Trainer James</p>
-              </div>
-              <div className="ml-3">
-                <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                  <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
+            <Link href="/workout-videos" className="block">
+              <div className="rounded-xl overflow-hidden relative mb-3">
+                <img 
+                  src="https://i.ytimg.com/vi/2L2lnxIcNmo/hqdefault.jpg" 
+                  alt="Workout video thumbnail"
+                  className="w-full h-auto object-cover rounded-xl"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/40 rounded-full p-3">
+                    <PlayCircle className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs font-medium py-1 px-2 rounded">
+                  15 min
                 </div>
               </div>
-            </div>
+              <h3 className="text-white font-medium">Quick workout videos from Chloe Ting</h3>
+              <p className="text-xs text-gray-400">Access full-length workout videos to follow along</p>
+            </Link>
           </div>
         </div>
       </div>

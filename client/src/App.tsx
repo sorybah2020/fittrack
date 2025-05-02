@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { queryClient } from "./lib/queryClient";
 import Dashboard from "@/pages/Dashboard";
 import Workouts from "@/pages/Workouts";
+import WorkoutVideos from "@/pages/WorkoutVideos";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
 import AuthPage from "@/pages/auth-page";
@@ -22,6 +23,7 @@ function App() {
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/workouts/:id" component={Workouts} />
           <ProtectedRoute path="/workouts" component={Workouts} />
+          <ProtectedRoute path="/workout-videos" component={WorkoutVideos} />
           <ProtectedRoute path="/progress" component={Progress} />
           <ProtectedRoute path="/profile" component={Profile} />
           <Route>
