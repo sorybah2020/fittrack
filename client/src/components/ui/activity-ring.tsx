@@ -14,13 +14,13 @@ export function ActivityRing({
   progress = 0,
   thickness = 8,
   color,
-  background = "#F2F2F7",
+  background = "#1C1C1E",
   className,
 }: ActivityRingProps) {
   const sizes = {
-    sm: 60,
+    sm: 70,
     md: 100,
-    lg: 150,
+    lg: 136,
   };
 
   const dimension = sizes[size];
@@ -35,6 +35,7 @@ export function ActivityRing({
       height={dimension}
       viewBox={`0 0 ${dimension} ${dimension}`}
     >
+      {/* Background ring with slight transparency */}
       <circle
         cx={dimension / 2}
         cy={dimension / 2}
@@ -42,7 +43,10 @@ export function ActivityRing({
         fill="none"
         stroke={background}
         strokeWidth={thickness}
+        opacity={0.3}
       />
+      
+      {/* Progress ring with glow effect */}
       <circle
         cx={dimension / 2}
         cy={dimension / 2}
@@ -53,7 +57,16 @@ export function ActivityRing({
         strokeDasharray={circumference}
         strokeDashoffset={dashoffset}
         strokeLinecap="round"
+        filter="url(#glow)"
       />
+      
+      {/* Glow filter definition */}
+      <defs>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
     </svg>
   );
 }
@@ -63,38 +76,61 @@ export function ActivityRings({
   exerciseProgress,
   standProgress,
   children,
+  size = "md",
 }: {
   moveProgress: number;
   exerciseProgress: number;
   standProgress: number;
   children?: React.ReactNode;
+  size?: "sm" | "md" | "lg";
 }) {
+  // Size classes based on the parent container
+  const containerSizes = {
+    sm: "w-32 h-32",
+    md: "w-40 h-40",
+    lg: "w-48 h-48",
+  };
+  
+  // Size mapping for the individual rings
+  const ringSizes: Record<string, {
+    outer: "sm" | "md" | "lg",
+    middle: "sm" | "md" | "lg",
+    inner: "sm" | "md" | "lg"
+  }> = {
+    sm: { outer: "sm", middle: "sm", inner: "sm" },
+    md: { outer: "md", middle: "sm", inner: "sm" },
+    lg: { outer: "lg", middle: "md", inner: "sm" },
+  };
+  
+  const ringSize = ringSizes[size];
+  const containerSize = containerSizes[size];
+  
   return (
-    <div className="relative w-48 h-48 flex items-center justify-center">
+    <div className={`relative ${containerSize} flex items-center justify-center`}>
       {/* Move ring (outer) */}
       <ActivityRing
-        size="lg"
+        size={ringSize.outer}
         progress={moveProgress}
-        color="#FF3B30"
-        thickness={8}
+        color="#FF453A"
+        thickness={10}
         className="absolute"
       />
       
       {/* Exercise ring (middle) */}
       <ActivityRing
-        size="md"
+        size={ringSize.middle}
         progress={exerciseProgress}
-        color="#FFCC00"
-        thickness={8}
+        color="#92F73A"
+        thickness={10}
         className="absolute"
       />
       
       {/* Stand ring (inner) */}
       <ActivityRing
-        size="sm"
+        size={ringSize.inner}
         progress={standProgress}
-        color="#34C759"
-        thickness={8}
+        color="#30D1F9"
+        thickness={10}
         className="absolute"
       />
       

@@ -51,33 +51,36 @@
   }
 
   .dark {
-    --background: 0 0% 7%;
+    --background: 240 3% 6%;
     --foreground: 0 0% 98%;
     
-    --card: 0 0% 12%;
+    --card: 240 2% 12%;
     --card-foreground: 0 0% 98%;
     
-    --popover: 0 0% 12%;
+    --popover: 240 2% 12%;
     --popover-foreground: 0 0% 98%;
     
-    --primary: 210 100% 50%;
+    /* Apple Fitness red ring color */
+    --primary: 357 100% 59%;
     --primary-foreground: 0 0% 100%;
     
+    /* Apple Fitness green ring color */
     --secondary: 142 70% 49%;
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 357 100% 59%;
+    /* Apple Fitness blue ring color */
+    --accent: 198 100% 58%;
     --accent-foreground: 0 0% 100%;
     
-    --muted: 229 4% 61%;
-    --muted-foreground: 229 4% 61%;
+    --muted: 240 4% 46%;
+    --muted-foreground: 240 4% 66%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 229 10% 22%;
-    --input: 229 10% 22%;
-    --ring: 217 93% 42%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 198 100% 58%;
   }
 }
 
