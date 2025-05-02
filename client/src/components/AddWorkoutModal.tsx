@@ -55,7 +55,15 @@ interface AddWorkoutModalProps {
 
 export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
   const queryClient = useQueryClient();
-  const { data: workoutTypes = [] } = useQuery({
+  
+  interface WorkoutType {
+    id: number;
+    name: string;
+    icon: string;
+    color: string;
+  }
+
+  const { data: workoutTypes = [] } = useQuery<WorkoutType[]>({
     queryKey: ['/api/workout-types'],
   });
   
@@ -74,12 +82,13 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
   
   const addWorkoutMutation = useMutation({
     mutationFn: async (data: FormValues) => {
-      // Convert duration from string to number
+      // Convert duration from string to number and format date as ISO string
       const workoutData = {
         ...data,
         workoutTypeId: parseInt(data.workoutTypeId),
         duration: parseInt(data.duration),
         distance: data.distance ? parseFloat(data.distance) : undefined,
+        date: data.date.toISOString().split('T')[0], // Format as YYYY-MM-DD
       };
       
       const response = await apiRequest("POST", "/api/workouts", workoutData);
@@ -102,6 +111,9 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New Workout</DialogTitle>
+          <p className="text-sm text-muted-foreground mt-2">
+            Enter the details of your workout to track your progress.
+          </p>
         </DialogHeader>
         
         <Form {...form}>
@@ -136,7 +148,7 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {workoutTypes.map((type: any) => (
+                      {workoutTypes.map((type) => (
                         <SelectItem key={type.id} value={type.id.toString()}>
                           {type.name}
                         </SelectItem>
