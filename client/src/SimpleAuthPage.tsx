@@ -23,17 +23,33 @@ export default function SimpleAuthPage() {
         credentials: "include",
       });
 
+      // Get the response content regardless of success/failure
+      let responseText;
+      let responseData;
+      
+      try {
+        responseText = await response.text();
+        try {
+          responseData = JSON.parse(responseText);
+        } catch (e) {
+          console.log("Non-JSON response:", responseText);
+        }
+      } catch (e) {
+        console.log("Could not read response body");
+      }
+      
       if (!response.ok) {
-        if (response.headers.get("content-type")?.includes("application/json")) {
-          const data = await response.json();
-          throw new Error(data.message || "Login failed");
+        console.log("Login failed with status:", response.status);
+        console.log("Response data:", responseData);
+        
+        if (responseData && responseData.message) {
+          throw new Error(responseData.message);
         } else {
-          throw new Error("Invalid username or password");
+          throw new Error(`Login failed with status ${response.status}`);
         }
       }
 
-      const user = await response.json();
-      console.log("Login successful:", user);
+      console.log("Login successful:", responseData);
       
       // Redirect to home page
       window.location.href = "/";
