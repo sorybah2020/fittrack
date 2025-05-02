@@ -244,6 +244,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         userId
       };
+
+      // If date is a string, convert it to a Date object
+      if (typeof workoutInput.date === 'string') {
+        workoutInput.date = new Date(workoutInput.date);
+      }
       
       // Validate workout type exists
       const workoutType = await storage.getWorkoutTypeById(workoutInput.workoutTypeId);

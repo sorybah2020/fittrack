@@ -155,8 +155,11 @@ export const storage = {
       })
       .returning();
       
+    // Make sure date is a proper Date object before passing it
+    const workoutDate = workout.date instanceof Date ? workout.date : new Date(workout.date);
+    
     // Update activity for the day
-    await this.updateActivityFromWorkouts(workout.userId, new Date(workout.date));
+    await this.updateActivityFromWorkouts(workout.userId, workoutDate);
       
     return newWorkout;
   },
@@ -217,8 +220,11 @@ export const storage = {
       .returning();
       
     if (updatedWorkout) {
+      // Make sure date is a proper Date object before passing it
+      const workoutDate = updatedWorkout.date instanceof Date ? updatedWorkout.date : new Date(updatedWorkout.date);
+      
       // Update activity for the day
-      await this.updateActivityFromWorkouts(updatedWorkout.userId, new Date(updatedWorkout.date));
+      await this.updateActivityFromWorkouts(updatedWorkout.userId, workoutDate);
     }
       
     return updatedWorkout;
@@ -231,8 +237,11 @@ export const storage = {
     await db.delete(schema.workouts)
       .where(eq(schema.workouts.id, id));
       
+    // Make sure date is a proper Date object before passing it
+    const workoutDate = workout.date instanceof Date ? workout.date : new Date(workout.date);
+    
     // Update activity for the day
-    await this.updateActivityFromWorkouts(workout.userId, new Date(workout.date));
+    await this.updateActivityFromWorkouts(workout.userId, workoutDate);
       
     return true;
   },
