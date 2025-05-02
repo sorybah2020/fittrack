@@ -29,7 +29,7 @@ const workoutIconMap: Record<string, React.ReactNode> = {
 };
 
 export function WorkoutCard({ workout }: WorkoutCardProps) {
-  const { data: workoutType = { color: "#0066CC", icon: "default" } } = useQuery<WorkoutType>({
+  const { data: workoutType } = useQuery<WorkoutType>({
     queryKey: ['/api/workout-types', workout.workoutTypeId],
   });
 
