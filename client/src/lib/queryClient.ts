@@ -21,7 +21,7 @@ export async function apiRequest(
   });
 
   // Handle auth errors
-  if (res.status === 401 && redirectOnAuth && !url.includes('/api/auth/')) {
+  if (res.status === 401 && redirectOnAuth && !url.includes('/api/login') && !url.includes('/api/register')) {
     window.location.href = "/login";
     throw new Error("Unauthorized. Redirecting to login...");
   }

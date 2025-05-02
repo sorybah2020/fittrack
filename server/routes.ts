@@ -80,7 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(passport.session());
   
   // Auth routes
-  app.post('/api/auth/register', async (req, res) => {
+  app.post('/api/register', async (req, res) => {
     try {
       const userData = insertUserSchema.parse(req.body);
       
@@ -112,13 +112,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post('/api/auth/login', passport.authenticate('local'), (req, res) => {
+  app.post('/api/login', passport.authenticate('local'), (req, res) => {
     // Remove password from response
     const { password, ...userWithoutPassword } = req.user as any;
     res.json(userWithoutPassword);
   });
   
-  app.post('/api/auth/logout', (req, res) => {
+  app.post('/api/logout', (req, res) => {
     req.logout((err) => {
       if (err) {
         return res.status(500).json({ message: "Error during logout" });
