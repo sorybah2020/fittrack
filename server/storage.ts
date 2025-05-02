@@ -273,26 +273,26 @@ export const storage = {
     // Get workouts for the day
     const workouts = await this.getWorkoutsByDate(userId, date);
     
-    // Calculate activity metrics
-    const calories = workouts.reduce((sum, workout) => sum + workout.calories, 0);
+    // Calculate activity metrics - ensure all values are integers
+    const calories = Math.round(workouts.reduce((sum, workout) => sum + workout.calories, 0));
     
     // Simplified calculation for move minutes, exercise minutes, and stand hours
-    const moveMinutes = workouts.reduce((sum, workout) => sum + workout.duration, 0);
+    const moveMinutes = Math.round(workouts.reduce((sum, workout) => sum + workout.duration, 0));
     
     // Exercise minutes are a portion of total workout time based on intensity
-    const exerciseMinutes = workouts.reduce((sum, workout) => {
+    const exerciseMinutes = Math.round(workouts.reduce((sum, workout) => {
       const factor = workout.intensity === 'high' ? 1 : 
                     workout.intensity === 'medium' ? 0.7 : 0.4;
       return sum + (workout.duration * factor);
-    }, 0);
+    }, 0));
     
     // Stand hours is estimated based on workout duration
     const standHours = Math.min(
       12, // Cap at 12 hours
-      workouts.reduce((sum, workout) => {
+      Math.round(workouts.reduce((sum, workout) => {
         // Every 30 minutes of activity counts as 1 standing hour
         return sum + Math.ceil(workout.duration / 30);
-      }, 0)
+      }, 0))
     );
     
     // Format date to YYYY-MM-DD for storage
@@ -432,11 +432,11 @@ export const storage = {
     
     return {
       calories: Math.round(averages[0].avgCalories || 0),
-      moveMinutes: averages[0].avgMoveMinutes || 0,
+      moveMinutes: Math.round(averages[0].avgMoveMinutes || 0),
       moveTarget: user.dailyMoveGoal,
-      exerciseMinutes: averages[0].avgExerciseMinutes || 0,
+      exerciseMinutes: Math.round(averages[0].avgExerciseMinutes || 0),
       exerciseTarget: user.dailyExerciseGoal,
-      standHours: averages[0].avgStandHours || 0, 
+      standHours: Math.round(averages[0].avgStandHours || 0), 
       standTarget: user.dailyStandGoal
     };
   },

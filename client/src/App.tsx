@@ -62,18 +62,10 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/signup" component={SignUp} />
-      <Route path="/">
-        {(params) => <PrivateRoute component={Dashboard} params={params} />}
-      </Route>
-      <Route path="/workouts">
-        {(params) => <PrivateRoute component={Workouts} params={params} />}
-      </Route>
-      <Route path="/progress">
-        {(params) => <PrivateRoute component={Progress} params={params} />}
-      </Route>
-      <Route path="/profile">
-        {(params) => <PrivateRoute component={Profile} params={params} />}
-      </Route>
+      <Route path="/" component={() => <PrivateRoute component={Dashboard} />} />
+      <Route path="/workouts" component={() => <PrivateRoute component={Workouts} />} />
+      <Route path="/progress" component={() => <PrivateRoute component={Progress} />} />
+      <Route path="/profile" component={() => <PrivateRoute component={Profile} />} />
       <Route component={NotFound} />
     </Switch>
   );
