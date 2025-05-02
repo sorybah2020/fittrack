@@ -17,6 +17,8 @@ export default function AppleStyleLogin() {
     setLoading(true);
 
     try {
+      console.log("Attempting regular login for user:", username);
+      
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -26,14 +28,29 @@ export default function AppleStyleLogin() {
         credentials: "include",
       });
 
-      const data = await response.json();
+      console.log("Login response status:", response.status);
+      
+      // Try to get response as text first
+      const responseText = await response.text();
+      console.log("Login response body:", responseText);
+      
+      // Then parse it as JSON if possible
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("Login parsed data:", data);
+      } catch (e) {
+        console.error("Could not parse response as JSON:", e);
+      }
       
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error((data && data.message) || `Login failed with status ${response.status}`);
       }
 
-      // Redirect to home page
-      setLocation("/");
+      console.log("Login successful!");
+      
+      // Use window.location for a full page refresh
+      window.location.href = "/";
     } catch (err) {
       console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "Login failed");
@@ -48,6 +65,8 @@ export default function AppleStyleLogin() {
     setLoading(true);
 
     try {
+      console.log("Attempting registration for user:", username);
+      
       const response = await fetch("/api/register", {
         method: "POST",
         headers: {
@@ -63,14 +82,29 @@ export default function AppleStyleLogin() {
         credentials: "include",
       });
 
-      const data = await response.json();
+      console.log("Registration response status:", response.status);
+      
+      // Try to get response as text first
+      const responseText = await response.text();
+      console.log("Registration response body:", responseText);
+      
+      // Then parse it as JSON if possible
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("Registration parsed data:", data);
+      } catch (e) {
+        console.error("Could not parse response as JSON:", e);
+      }
       
       if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
+        throw new Error((data && data.message) || `Registration failed with status ${response.status}`);
       }
 
+      console.log("Registration successful!");
+      
       // Redirect to home page after successful registration
-      setLocation("/");
+      window.location.href = "/";
     } catch (err) {
       console.error("Registration error:", err);
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -80,11 +114,16 @@ export default function AppleStyleLogin() {
   };
 
   const handleDemoLogin = async () => {
+    // Update UI first
     setUsername("demo");
     setPassword("password123");
+    setShowPassword(true);
+    setError("");
     
     try {
       setLoading(true);
+      console.log("Attempting demo login...");
+      
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -97,14 +136,29 @@ export default function AppleStyleLogin() {
         credentials: "include",
       });
 
-      const data = await response.json();
+      console.log("Demo login response status:", response.status);
+      
+      // Try to get response as text first
+      const responseText = await response.text();
+      console.log("Demo login response body:", responseText);
+      
+      // Then parse it as JSON if possible
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("Demo login parsed data:", data);
+      } catch (e) {
+        console.error("Could not parse response as JSON:", e);
+      }
       
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error((data && data.message) || `Login failed with status ${response.status}`);
       }
 
-      // Redirect to home page
-      setLocation("/");
+      console.log("Demo login successful!");
+      
+      // Use window.location for a full page refresh to ensure clean state
+      window.location.href = "/";
     } catch (err) {
       console.error("Demo login error:", err);
       setError(err instanceof Error ? err.message : "Login failed");
