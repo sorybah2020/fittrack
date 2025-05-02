@@ -8,6 +8,7 @@ import Workouts from "@/pages/Workouts";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
 import Login from "@/pages/Login";
+import SignUp from "@/pages/SignUp";
 import NotFound from "@/pages/not-found";
 
 // Simple authentication check
@@ -60,6 +61,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
+      <Route path="/signup" component={SignUp} />
       <Route path="/">
         {(params) => <PrivateRoute component={Dashboard} params={params} />}
       </Route>
