@@ -33,19 +33,29 @@ async function seed() {
     const existingUsers = await db.query.users.findMany();
     
     if (existingUsers.length === 0) {
-      console.log("Creating default user...");
+      console.log("Creating default users...");
       
-      const hashedPassword = await bcrypt.hash("password123", 10);
+      const defaultPassword = await bcrypt.hash("password123", 10);
       
+      // Create main default user
       const [user] = await db.insert(schema.users).values({
         username: "fitnessuser",
-        password: hashedPassword,
+        password: defaultPassword,
         dailyMoveGoal: 450,
         dailyExerciseGoal: 30,
         dailyStandGoal: 12
       }).returning();
       
-      console.log("Default user created with username: fitnessuser");
+      // Create demo user
+      await db.insert(schema.users).values({
+        username: "demo",
+        password: defaultPassword,
+        dailyMoveGoal: 500,
+        dailyExerciseGoal: 40,
+        dailyStandGoal: 10
+      });
+      
+      console.log("Default users created: 'fitnessuser' and 'demo' (both with password 'password123')");
       
       // Create some sample workouts for the default user
       const today = new Date();
