@@ -72,7 +72,7 @@ export default function SignUp() {
         dailyStandGoal: parseInt(registerData.dailyStandGoal || "12")
       };
       
-      const response = await apiRequest("POST", "/api/auth/register", formattedData, false);
+      const response = await apiRequest("POST", "/api/register", formattedData, false);
       
       if (response.ok) {
         // Redirect to dashboard

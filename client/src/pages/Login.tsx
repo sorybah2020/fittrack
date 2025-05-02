@@ -49,7 +49,7 @@ export default function Login() {
     setIsLoading(true);
     
     try {
-      const response = await apiRequest("POST", "/api/auth/login", data);
+      const response = await apiRequest("POST", "/api/login", data);
       
       if (response.ok) {
         // Redirect to dashboard
