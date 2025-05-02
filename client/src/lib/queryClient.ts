@@ -1,7 +1,8 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
-  if (!res.ok) {
+  // If it's a 401, we handle it separately
+  if (!res.ok && res.status !== 401) {
     const text = (await res.text()) || res.statusText;
     throw new Error(`${res.status}: ${text}`);
   }
@@ -22,7 +23,7 @@ export async function apiRequest(
 
   // Handle auth errors
   if (res.status === 401 && redirectOnAuth && !url.includes('/api/login') && !url.includes('/api/register')) {
-    window.location.href = "/login";
+    window.location.href = "/auth";
     throw new Error("Unauthorized. Redirecting to login...");
   }
 
@@ -45,7 +46,7 @@ export const getQueryFn: <T>(options: {
         return null;
       } else if (unauthorizedBehavior === "redirect") {
         // Redirect to login page if not authenticated
-        window.location.href = "/login";
+        window.location.href = "/auth";
         return null;
       }
     }
@@ -57,7 +58,7 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "redirect" }),
+      queryFn: getQueryFn({ on401: "returnNull" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,

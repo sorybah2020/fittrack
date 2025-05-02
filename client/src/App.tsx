@@ -18,19 +18,15 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Switch>
-          <Route path="/auth">
-            <AuthPage />
-          </Route>
-          <ProtectedRoute path="/" component={Dashboard} />
-          <ProtectedRoute path="/workouts/:id" component={Workouts} />
-          <ProtectedRoute path="/workouts" component={Workouts} />
-          <ProtectedRoute path="/workout-videos" component={WorkoutVideos} />
-          <ProtectedRoute path="/workout-music" component={WorkoutMusic} />
-          <ProtectedRoute path="/progress" component={Progress} />
-          <ProtectedRoute path="/profile" component={Profile} />
-          <Route>
-            <NotFound />
-          </Route>
+          <Route path="/auth" component={AuthPage} />
+          <Route path="/" component={Dashboard} />
+          <Route path="/workouts/:id" component={Workouts} />
+          <Route path="/workouts" component={Workouts} />
+          <Route path="/workout-videos" component={WorkoutVideos} />
+          <Route path="/workout-music" component={WorkoutMusic} />
+          <Route path="/progress" component={Progress} />
+          <Route path="/profile" component={Profile} />
+          <Route component={NotFound} />
         </Switch>
         <Toaster />
       </AuthProvider>

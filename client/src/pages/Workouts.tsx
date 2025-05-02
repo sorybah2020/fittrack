@@ -87,15 +87,18 @@ export default function Workouts() {
   });
   
   return (
-    <div className="flex flex-col min-h-screen pb-20">
+    <div className="flex flex-col min-h-screen pb-20 bg-black">
       {/* Header */}
-      <div className="bg-white px-5 pt-12 pb-4 sticky top-0 z-10">
+      <div className="bg-black px-5 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-800">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <Link href="/">
-              <ChevronLeft className="h-6 w-6 mr-2" />
+              <ChevronLeft className="h-6 w-6 mr-2 text-white" />
             </Link>
-            <h1 className="text-2xl font-bold">Workouts</h1>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Your Workouts</h1>
+              <p className="text-gray-400 text-sm">Track and manage your fitness activity</p>
+            </div>
           </div>
           <button 
             onClick={() => setIsAddWorkoutOpen(true)}
@@ -110,30 +113,37 @@ export default function Workouts() {
           </button>
         </div>
         
-        <div className="flex flex-col space-y-3">
-          <Input
-            placeholder="Search workouts..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full"
-          />
-          
-          <Select 
-            value={filter} 
-            onValueChange={setFilter}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Filter by type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {(workoutTypes as WorkoutType[]).map((type: WorkoutType) => (
-                <SelectItem key={type.id} value={type.id.toString()}>
-                  {type.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col space-y-3 mt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="relative">
+              <Input
+                placeholder="Search workouts..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
+              />
+              <svg className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            
+            <Select 
+              value={filter} 
+              onValueChange={setFilter}
+            >
+              <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectItem value="all" className="text-white">All Workout Types</SelectItem>
+                {(workoutTypes as WorkoutType[]).map((type: WorkoutType) => (
+                  <SelectItem key={type.id} value={type.id.toString()} className="text-white">
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
       
@@ -142,26 +152,31 @@ export default function Workouts() {
         {sortedDates.length > 0 ? (
           sortedDates.map((dateStr) => (
             <div key={dateStr} className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">
-                {format(new Date(dateStr), 'MMMM d, yyyy')}
-              </h2>
+              <div className="flex items-center mb-2">
+                <div className="h-1 w-1 bg-primary rounded-full mr-2"></div>
+                <h2 className="text-lg font-semibold text-white">
+                  {format(new Date(dateStr), 'MMMM d, yyyy')}
+                </h2>
+              </div>
               
-              {groupedWorkouts[dateStr].map((workout: Workout) => (
-                <WorkoutCard 
-                  key={workout.id} 
-                  workout={workout} 
-                  onEdit={handleEditWorkout}
-                  onDelete={handleDeleteWorkout}
-                />
-              ))}
+              <div className="space-y-3">
+                {groupedWorkouts[dateStr].map((workout: Workout) => (
+                  <WorkoutCard 
+                    key={workout.id} 
+                    workout={workout} 
+                    onEdit={handleEditWorkout}
+                    onDelete={handleDeleteWorkout}
+                  />
+                ))}
+              </div>
             </div>
           ))
         ) : (
-          <div className="bg-neutral-light rounded-xl p-8 text-center mt-8">
-            <p className="text-neutral-mid mb-2">No workouts found</p>
+          <div className="bg-card rounded-xl p-8 text-center mt-8 border border-gray-800">
+            <p className="text-gray-400 mb-4">No workouts found with the current filters</p>
             <button 
               onClick={() => setIsAddWorkoutOpen(true)}
-              className="text-primary font-medium"
+              className="text-primary font-medium bg-primary/10 hover:bg-primary/20 py-2 px-4 rounded-lg transition-colors"
             >
               Add your first workout
             </button>
