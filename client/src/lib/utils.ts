@@ -36,8 +36,20 @@ export function formatDuration(minutes: number): string {
   return `${hours} hr${hours === 1 ? '' : 's'} ${remainingMinutes} min${remainingMinutes === 1 ? '' : 's'}`;
 }
 
-export function formatDistance(miles: number): string {
-  return `${miles.toFixed(1)} mile${miles === 1 ? '' : 's'}`;
+export function formatDistance(miles: number | string | null | undefined): string {
+  if (miles === null || miles === undefined) return '0 miles';
+  
+  // Convert to number if it's a string
+  const milesNum = typeof miles === 'string' ? parseFloat(miles) : miles;
+  
+  // Check if it's a valid number
+  if (isNaN(milesNum)) return '0 miles';
+  
+  // Format the number with one decimal place
+  const formatted = milesNum.toFixed(1);
+  
+  // Handle singular vs plural
+  return `${formatted} mile${milesNum === 1 ? '' : 's'}`;
 }
 
 export function formatRelativeTime(date: Date | string): string {
