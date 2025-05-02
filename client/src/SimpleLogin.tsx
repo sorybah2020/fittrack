@@ -52,8 +52,8 @@ export default function SimpleLogin() {
 
       console.log("Login successful!");
       
-      // Redirect to home page after success with cache busting
-      window.location.href = "/?login=" + new Date().getTime();
+      // Redirect to home page (without the login parameter)
+      window.location.href = "/"; // This will load the main App
     } catch (err) {
       console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "Login failed");
@@ -101,8 +101,8 @@ export default function SimpleLogin() {
 
       console.log("Registration successful!");
       
-      // Redirect to home page after successful registration with cache busting
-      window.location.href = "/?login=" + new Date().getTime();
+      // Redirect to home page after successful registration
+      window.location.href = "/";
     } catch (err) {
       console.error("Registration error:", err);
       setError(err instanceof Error ? err.message : "Registration failed");

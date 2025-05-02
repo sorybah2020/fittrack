@@ -8,13 +8,13 @@ import WorkoutVideos from "@/pages/WorkoutVideos";
 import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
-import StableLogin from "./StableLogin";
+import LoginPage from "./LoginPage";
 import NotFound from "@/pages/not-found";
 import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "./hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
-// Protected route component that doesn't use external module
+// Protected route component that redirects to login if not authenticated
 function ProtectedRoute({ 
   path, 
   component: Component 
@@ -31,7 +31,7 @@ function ProtectedRoute({
           <Loader2 className="h-8 w-8 animate-spin text-red-500" />
         </div>
       ) : !user ? (
-        <StableLogin />
+        <LoginPage />
       ) : (
         <Component />
       )}
@@ -45,7 +45,7 @@ function App() {
       <AuthProvider>
         <Switch>
           <Route path="/auth">
-            <StableLogin />
+            <LoginPage />
           </Route>
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/workouts/:id" component={Workouts} />
