@@ -9,7 +9,8 @@ import { WorkoutCard } from "@/components/WorkoutCard";
 import { TrendsChart } from "@/components/TrendsChart";
 import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
-import { Activity, Workout, WeeklyActivity } from "@/lib/fitness-types";
+import { QuickStartWorkout } from "@/components/QuickStartWorkout";
+import { Activity, Workout, WeeklyActivity, WorkoutType } from "@/lib/fitness-types";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -31,6 +32,10 @@ export default function Dashboard() {
   
   const { data: weeklyActivity = [] } = useQuery({
     queryKey: ['/api/activities/weekly'],
+  });
+  
+  const { data: workoutTypes = [] } = useQuery<WorkoutType[]>({
+    queryKey: ['/api/workout-types'],
   });
   
   const handleDateChange = (date: Date) => {
@@ -90,6 +95,11 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+      </div>
+      
+      {/* Quick Start Workout */}
+      <div className="px-5">
+        <QuickStartWorkout workoutTypes={workoutTypes as WorkoutType[]} />
       </div>
       
       {/* Step Count Card */}
