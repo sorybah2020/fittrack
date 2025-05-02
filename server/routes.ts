@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { setupSpotifyRoutes } from "./spotify";
+import { setupPasswordReset } from "./reset-password";
 import { z } from "zod";
 import { insertWorkoutSchema } from "@shared/schema";
 import { pool } from "../db";
@@ -19,6 +20,9 @@ function ensureAuthenticated(req: Request, res: Response, next: Function) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication with Passport.js
   setupAuth(app);
+  
+  // Set up password reset functionality
+  setupPasswordReset(app);
   
   // Set up Spotify integration
   setupSpotifyRoutes(app);
