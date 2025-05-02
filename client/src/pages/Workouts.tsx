@@ -90,11 +90,24 @@ export default function Workouts() {
     <div className="flex flex-col min-h-screen pb-20">
       {/* Header */}
       <div className="bg-white px-5 pt-12 pb-4 sticky top-0 z-10">
-        <div className="flex items-center mb-4">
-          <Link href="/">
-            <ChevronLeft className="h-6 w-6 mr-2" />
-          </Link>
-          <h1 className="text-2xl font-bold">Workouts</h1>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <Link href="/">
+              <ChevronLeft className="h-6 w-6 mr-2" />
+            </Link>
+            <h1 className="text-2xl font-bold">Workouts</h1>
+          </div>
+          <button 
+            onClick={() => setIsAddWorkoutOpen(true)}
+            className="bg-gradient-to-r from-pink-500 to-orange-500 text-white rounded-full px-4 py-2 flex items-center shadow-lg shadow-pink-500/20"
+            style={{ boxShadow: "0 0 10px 2px rgba(255, 69, 58, 0.2)" }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Workout
+          </button>
         </div>
         
         <div className="flex flex-col space-y-3">
