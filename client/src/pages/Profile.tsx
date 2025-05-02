@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { useLocation } from "wouter";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { apiRequest } from "@/lib/queryClient";
@@ -26,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, Trophy, Award, Target, Save } from "lucide-react";
+import { ChevronLeft, Trophy, Award, Target, Save, LogOut } from "lucide-react";
 import { Link } from "wouter";
 
 const profileFormSchema = z.object({
@@ -43,6 +44,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export default function Profile() {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false);
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
   
   const { data: user, isLoading } = useQuery({
     queryKey: ['/api/users/me'],
@@ -100,6 +102,20 @@ export default function Profile() {
   
   function onSubmit(data: ProfileFormValues) {
     updateProfileMutation.mutate(data);
+  }
+  
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/logout");
+    },
+    onSuccess: () => {
+      queryClient.clear();
+      navigate('/login');
+    },
+  });
+  
+  function handleLogout() {
+    logoutMutation.mutate();
   }
   
   if (isLoading) {
