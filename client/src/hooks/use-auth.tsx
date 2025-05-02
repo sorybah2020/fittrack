@@ -49,12 +49,26 @@ function useLoginMutation() {
   
   return useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const res = await apiRequest('POST', '/api/login', credentials);
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || 'Login failed');
+      try {
+        const res = await apiRequest('POST', '/api/login', credentials);
+        if (!res.ok) {
+          // Handle error when response isn't OK but is valid JSON
+          if (res.headers.get('content-type')?.includes('application/json')) {
+            const error = await res.json();
+            throw new Error(error.message || 'Login failed');
+          } else {
+            // Handle non-JSON errors (like 'Unauthorized')
+            throw new Error('Invalid username or password');
+          }
+        }
+        return await res.json();
+      } catch (err) {
+        // Handle any other errors including JSON parsing errors
+        if (err instanceof Error) {
+          throw err;
+        }
+        throw new Error('Login failed. Please try again.');
       }
-      return await res.json();
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(['/api/user'], user);
@@ -78,12 +92,26 @@ function useRegisterMutation() {
   
   return useMutation({
     mutationFn: async (data: RegisterData) => {
-      const res = await apiRequest('POST', '/api/register', data);
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || 'Registration failed');
+      try {
+        const res = await apiRequest('POST', '/api/register', data);
+        if (!res.ok) {
+          // Handle error when response isn't OK but is valid JSON
+          if (res.headers.get('content-type')?.includes('application/json')) {
+            const error = await res.json();
+            throw new Error(error.message || 'Registration failed');
+          } else {
+            // Handle non-JSON errors
+            throw new Error('Registration failed. Please try again.');
+          }
+        }
+        return await res.json();
+      } catch (err) {
+        // Handle any other errors including JSON parsing errors
+        if (err instanceof Error) {
+          throw err;
+        }
+        throw new Error('Registration failed. Please try again.');
       }
-      return await res.json();
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(['/api/user'], user);
@@ -107,12 +135,26 @@ function useLogoutMutation() {
   
   return useMutation({
     mutationFn: async () => {
-      const res = await apiRequest('POST', '/api/logout');
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || 'Logout failed');
+      try {
+        const res = await apiRequest('POST', '/api/logout');
+        if (!res.ok) {
+          // Handle error when response isn't OK but is valid JSON
+          if (res.headers.get('content-type')?.includes('application/json')) {
+            const error = await res.json();
+            throw new Error(error.message || 'Logout failed');
+          } else {
+            // Handle non-JSON errors
+            throw new Error('Session expired. Please log in again.');
+          }
+        }
+        return;
+      } catch (err) {
+        // Handle any other errors including JSON parsing errors
+        if (err instanceof Error) {
+          throw err;
+        }
+        throw new Error('Logout failed. Please try again.');
       }
-      return;
     },
     onSuccess: () => {
       queryClient.setQueryData(['/api/user'], null);

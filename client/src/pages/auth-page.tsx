@@ -52,8 +52,15 @@ export default function AuthPage() {
   });
   
   function onLoginSubmit(data: LoginFormValues) {
+    // Log the login attempt (for debugging)
+    console.log("Login attempt with:", data.username);
+    
     loginMutation.mutate(data, {
+      onSuccess: () => {
+        console.log("Login successful");
+      },
       onError: (error) => {
+        console.error("Login error:", error);
         loginForm.setError("root", { 
           message: error.message || "Login failed. Please check your credentials."
         });
@@ -82,7 +89,7 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-primary mb-2">Fitness Tracker</h1>
+            <h1 className="text-4xl font-bold tracking-tight text-red-500 mb-2">Fitness Tracker</h1>
             <p className="text-muted-foreground">Track your workouts and fitness goals</p>
           </div>
           
@@ -131,13 +138,39 @@ export default function AuthPage() {
                   
                   <Button 
                     type="submit" 
-                    className="w-full" 
+                    className="w-full bg-red-500 hover:bg-red-600 text-white" 
+                    style={{
+                      height: "44px",
+                      fontSize: "16px",
+                      fontWeight: "500"
+                    }}
                     disabled={loginMutation.isPending}
                   >
                     {loginMutation.isPending ? "Logging in..." : "Log in"}
                   </Button>
+
+                  <Button 
+                    type="button" 
+                    className="w-full bg-gray-800 hover:bg-gray-700 text-white mt-2" 
+                    style={{
+                      height: "44px",
+                      fontSize: "16px",
+                      fontWeight: "500"
+                    }}
+                    onClick={() => {
+                      loginForm.setValue("username", "demo");
+                      loginForm.setValue("password", "password123");
+                      loginMutation.mutate({
+                        username: "demo",
+                        password: "password123"
+                      });
+                    }}
+                    disabled={loginMutation.isPending}
+                  >
+                    Demo Login
+                  </Button>
                   
-                  <div className="text-center text-sm text-muted-foreground">
+                  <div className="text-center text-sm text-muted-foreground mt-4">
                     Don't have an account?{" "}
                     <button 
                       type="button"
@@ -234,7 +267,12 @@ export default function AuthPage() {
                   
                   <Button 
                     type="submit" 
-                    className="w-full mt-4" 
+                    className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white" 
+                    style={{
+                      height: "44px",
+                      fontSize: "16px",
+                      fontWeight: "500"
+                    }}
                     disabled={registerMutation.isPending}
                   >
                     {registerMutation.isPending ? "Creating account..." : "Create account"}

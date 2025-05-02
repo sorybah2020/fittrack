@@ -118,12 +118,29 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    // Don't send password back to client
-    const userResponse = { ...req.user };
-    delete userResponse.password;
-    
-    res.status(200).json(userResponse);
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err: any, user: SelectUser | false, info: any) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+      
+      req.login(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        
+        // Don't send password back to client
+        const userResponse = { ...user } as any;
+        if (userResponse && typeof userResponse === 'object') {
+          delete userResponse.password;
+        }
+        
+        return res.status(200).json(userResponse);
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {
@@ -137,8 +154,10 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
     
     // Don't send password back to client
-    const userResponse = { ...req.user };
-    delete userResponse.password;
+    const userResponse = { ...req.user } as any;
+    if (userResponse && typeof userResponse === 'object') {
+      delete userResponse.password;
+    }
     
     res.json(userResponse);
   });
