@@ -79,11 +79,11 @@ export default function LoginPage() {
           </div>
         </div>
         
-        <h1 className="text-2xl font-medium text-center mb-1">
+        <h1 className="text-3xl font-bold text-center mb-2 text-black">
           {isSignupMode ? "Create Account" : "Sign In"}
         </h1>
         
-        <p className="text-sm text-gray-500 text-center mb-6">
+        <p className="text-md text-gray-700 text-center mb-6 font-medium">
           {isSignupMode ? "Sign up for Fitness Tracker" : "Sign in to Fitness Tracker"}
         </p>
         
@@ -95,23 +95,31 @@ export default function LoginPage() {
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1 ml-1">
+              Username
+            </label>
             <input
+              id="username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username" 
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your username" 
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
               required
             />
           </div>
           
           <div className="mb-6">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1 ml-1">
+              Password
+            </label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your password"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
               required
             />
           </div>
@@ -119,10 +127,10 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || !username || !password}
-            className={`w-full py-3 rounded-lg font-medium text-white 
+            className={`w-full py-4 rounded-lg font-semibold text-white text-lg
               ${(loading || !username || !password) 
                 ? 'bg-blue-400 cursor-not-allowed' 
-                : 'bg-blue-600 hover:bg-blue-700'}`}
+                : 'bg-blue-600 hover:bg-blue-700 shadow-md'}`}
           >
             {loading 
               ? "Processing..." 
@@ -130,11 +138,11 @@ export default function LoginPage() {
           </button>
         </form>
         
-        <div className="mt-5 text-center">
+        <div className="mt-6 text-center">
           <button
             type="button"
             onClick={() => setIsSignupMode(!isSignupMode)}
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-blue-600 hover:text-blue-800 font-medium text-base px-4 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
           >
             {isSignupMode 
               ? "Already have an account? Sign In" 
