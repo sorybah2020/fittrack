@@ -40,25 +40,14 @@ export function BottomNavbar({ onAddClick }: BottomNavbarProps) {
   ];
   
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white bg-opacity-95 bottom-tab border-t border-gray-200 safe-area-bottom z-10">
+    <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-90 bottom-tab border-t border-gray-800 safe-area-bottom z-10">
       <div className="flex justify-around items-center h-16">
         {navItems.map((item, index) => {
           const isActive = location === item.path;
           const itemClass = cn(
-            "flex flex-col items-center justify-center",
-            isActive ? "text-primary" : "text-neutral-mid"
+            "flex flex-col items-center justify-center w-full py-2",
+            isActive ? "text-white" : "text-gray-500"
           );
-          
-          if (index === 1) {
-            return (
-              <div key={item.path} className="flex flex-col items-center justify-center">
-                <Link href={item.path} className={itemClass}>
-                  {item.icon}
-                  <span className="text-xs mt-1">{item.label}</span>
-                </Link>
-              </div>
-            );
-          }
           
           return (
             <Link key={item.path} href={item.path} className={itemClass}>
@@ -67,15 +56,6 @@ export function BottomNavbar({ onAddClick }: BottomNavbarProps) {
             </Link>
           );
         })}
-        
-        <div className="flex flex-col items-center justify-center">
-          <button 
-            onClick={onAddClick}
-            className="rounded-full bg-primary w-12 h-12 flex items-center justify-center"
-          >
-            <Plus className="h-6 w-6 text-white" />
-          </button>
-        </div>
       </div>
     </div>
   );

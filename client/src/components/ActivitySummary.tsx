@@ -10,12 +10,10 @@ interface ActivityProgressProps {
 }
 
 function ActivityProgress({ current, target, label, color }: ActivityProgressProps) {
-  const progress = Math.min(current, target);
   return (
-    <div className="text-center">
-      <div className="w-full h-1 rounded-full mb-1" style={{ backgroundColor: color }}></div>
-      <p className="font-medium">{progress}/{target}</p>
-      <p className="text-xs text-neutral-mid">{label}</p>
+    <div className="flex flex-col">
+      <div className="text-xs font-medium mb-1 uppercase" style={{ color }}>{label}</div>
+      <div className="text-base font-semibold text-white">{current}<span className="text-gray-400">/{target}{label === "MOVE" ? "CAL" : label === "EXERCISE" ? "MIN" : "HRS"}</span></div>
     </div>
   );
 }
@@ -30,37 +28,36 @@ export function ActivitySummary({ data }: ActivitySummaryProps) {
   const standProgress = getProgressPercentage(data.standHours, data.standTarget);
 
   return (
-    <div className="bg-white mt-2 px-5 py-6">
-      <h2 className="text-lg font-semibold mb-4">Activity</h2>
-      <div className="flex justify-center mb-6">
-        <ActivityRings
-          moveProgress={moveProgress}
-          exerciseProgress={exerciseProgress}
-          standProgress={standProgress}
-        >
-          <p className="text-lg font-bold">{data.caloriesBurned}</p>
-          <p className="text-xs text-neutral-mid">CALORIES</p>
-        </ActivityRings>
+    <div className="flex">
+      <div className="flex-1">
+        <div className="flex justify-center py-4">
+          <ActivityRings
+            moveProgress={moveProgress}
+            exerciseProgress={exerciseProgress}
+            standProgress={standProgress}
+            size="lg"
+          />
+        </div>
       </div>
       
-      <div className="grid grid-cols-3 gap-4">
+      <div className="flex-1 flex flex-col justify-center space-y-3">
         <ActivityProgress 
-          current={data.moveMinutes} 
+          current={data.caloriesBurned} 
           target={data.moveTarget} 
-          label="MOVE" 
-          color="#FF3B30" 
+          label="Move" 
+          color="#FF453A" 
         />
         <ActivityProgress 
           current={data.exerciseMinutes} 
           target={data.exerciseTarget} 
-          label="EXERCISE" 
-          color="#FFCC00" 
+          label="Exercise" 
+          color="#92F73A" 
         />
         <ActivityProgress 
           current={data.standHours} 
           target={data.standTarget} 
-          label="STAND" 
-          color="#34C759" 
+          label="Stand" 
+          color="#30D1F9" 
         />
       </div>
     </div>
