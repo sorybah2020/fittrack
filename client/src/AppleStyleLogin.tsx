@@ -113,59 +113,7 @@ export default function AppleStyleLogin() {
     }
   };
 
-  const handleDemoLogin = async () => {
-    // Update UI first
-    setUsername("demo");
-    setPassword("password123");
-    setShowPassword(true);
-    setError("");
-    
-    try {
-      setLoading(true);
-      console.log("Attempting demo login...");
-      
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          username: "demo", 
-          password: "password123" 
-        }),
-        credentials: "include",
-      });
 
-      console.log("Demo login response status:", response.status);
-      
-      // Try to get response as text first
-      const responseText = await response.text();
-      console.log("Demo login response body:", responseText);
-      
-      // Then parse it as JSON if possible
-      let data;
-      try {
-        data = JSON.parse(responseText);
-        console.log("Demo login parsed data:", data);
-      } catch (e) {
-        console.error("Could not parse response as JSON:", e);
-      }
-      
-      if (!response.ok) {
-        throw new Error((data && data.message) || `Login failed with status ${response.status}`);
-      }
-
-      console.log("Demo login successful!");
-      
-      // Use window.location for a full page refresh to ensure clean state
-      window.location.href = "/";
-    } catch (err) {
-      console.error("Demo login error:", err);
-      setError(err instanceof Error ? err.message : "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div style={{
@@ -225,7 +173,7 @@ export default function AppleStyleLogin() {
           textAlign: 'center',
           marginBottom: '4px'
         }}>
-          Fitness ID
+          Fitness Tracker
         </h1>
         
         <p style={{
@@ -234,7 +182,7 @@ export default function AppleStyleLogin() {
           textAlign: 'center',
           marginBottom: '24px'
         }}>
-          Sign in to your Fitness account
+          Sign in or create a new account
         </p>
         
         {error && (
@@ -264,7 +212,7 @@ export default function AppleStyleLogin() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Fitness ID"
+                placeholder="Username"
                 style={{
                   width: '100%',
                   padding: '12px 16px',
@@ -377,31 +325,6 @@ export default function AppleStyleLogin() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
           
-          <button
-            type="button"
-            onClick={handleDemoLogin}
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '12px',
-              marginBottom: '12px',
-              backgroundColor: '#E5E5EA',
-              color: '#000',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              opacity: loading ? 0.7 : 1
-            }}
-          >
-            <span style={{ marginRight: '8px' }}>👤</span>
-            Demo Login
-          </button>
-          
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -423,9 +346,7 @@ export default function AppleStyleLogin() {
         
         <div style={{
           marginTop: '24px',
-          textAlign: 'center',
-          fontSize: '14px',
-          color: '#86868b'
+          textAlign: 'center'
         }}>
           <button 
             type="button"
@@ -434,18 +355,23 @@ export default function AppleStyleLogin() {
                 handleRegister(e);
               } else {
                 setError("Please enter a username and password to register");
+                setShowPassword(true);
               }
             }}
             style={{
-              background: 'none',
+              width: '100%',
+              padding: '12px',
+              backgroundColor: '#32D74B',
+              color: 'white',
               border: 'none',
-              padding: 0,
-              color: '#0A84FF',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '500',
               cursor: 'pointer',
-              fontSize: '14px'
+              transition: 'opacity 0.2s ease'
             }}
           >
-            Create Fitness ID
+            Create New Account
           </button>
         </div>
       </div>
