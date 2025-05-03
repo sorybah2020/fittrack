@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { BottomNavbar } from "@/components/BottomNavbar";
+import { AddWorkoutModal } from "@/components/AddWorkoutModal";
 
 export default function Profile() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showAddWorkoutModal, setShowAddWorkoutModal] = useState(false);
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -37,8 +40,8 @@ export default function Profile() {
   }
 
   return (
-    <div className="container max-w-md mx-auto py-8 px-4">
-      <Card className="bg-card/50 rounded-xl border border-gray-800">
+    <div className="min-h-screen bg-black text-white pt-8 px-4 pb-24">
+      <Card className="max-w-md mx-auto bg-gray-900 rounded-xl border border-gray-800">
         <CardHeader className="pb-3">
           <CardTitle className="text-2xl">Profile</CardTitle>
           <CardDescription>Manage your account settings</CardDescription>
@@ -103,6 +106,15 @@ export default function Profile() {
           </Button>
         </CardFooter>
       </Card>
+      
+      {/* Add Workout Modal */}
+      <AddWorkoutModal 
+        isOpen={showAddWorkoutModal} 
+        onClose={() => setShowAddWorkoutModal(false)} 
+      />
+      
+      {/* Bottom Navigation */}
+      <BottomNavbar onAddClick={() => setShowAddWorkoutModal(true)} />
     </div>
   );
 }
