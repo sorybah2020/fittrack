@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { useUser } from "../UserContext";
-import { Loader2, LogOut, User, Settings, ChevronRight } from "lucide-react";
+import { Loader2, LogOut, User as UserIcon, Settings, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
+import { User } from "@shared/schema";
 
-export default function Profile() {
-  const user = useUser();
+interface ProfileProps {
+  user: User;
+}
+
+export default function Profile({ user }: ProfileProps) {
   const { toast } = useToast();
   const [loggingOut, setLoggingOut] = useState(false);
   const [showAddWorkoutModal, setShowAddWorkoutModal] = useState(false);
@@ -58,7 +61,7 @@ export default function Profile() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-center pb-4">
             <div className="h-24 w-24 bg-gray-800 rounded-full flex items-center justify-center">
-              <User className="h-12 w-12 text-gray-400" />
+              <UserIcon className="h-12 w-12 text-gray-400" />
             </div>
           </div>
           
@@ -87,7 +90,7 @@ export default function Profile() {
               variant="outline" 
               className="w-full justify-start text-gray-300 border-gray-800 hover:bg-gray-800 hover:text-white"
             >
-              <User className="mr-2 h-4 w-4" />
+              <UserIcon className="mr-2 h-4 w-4" />
               Personal Information
             </Button>
           </div>

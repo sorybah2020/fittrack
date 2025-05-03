@@ -1,97 +1,92 @@
-import { FormEvent, useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from './hooks/use-auth';
-import { useLocation } from 'wouter';
+import { useState, FormEvent } from "react";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSignupMode, setIsSignupMode] = useState(false);
-  const [showPasswordReset, setShowPasswordReset] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
-  const [resetSubmitting, setResetSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { user, loginMutation, registerMutation } = useAuth();
-  const [, setLocation] = useLocation();
 
-  const handlePasswordReset = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!resetEmail) return;
-    
-    setResetSubmitting(true);
-    try {
-      const response = await fetch("/api/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: resetEmail }),
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to request password reset");
-      }
-      
-      toast({
-        title: "Password Reset Requested",
-        description: "If an account exists with this email, you will receive password reset instructions.",
-        duration: 5000,
-      });
-      setShowPasswordReset(false);
-      setResetEmail("");
-    } catch (err) {
-      console.error("Password reset error:", err);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: err instanceof Error ? err.message : "Failed to request password reset",
-        duration: 5000,
-      });
-    } finally {
-      setResetSubmitting(false);
-    }
-  };
-  
-  // We don't need to use redirection via useEffect here anymore
-  // If user is already authenticated, AppRoutes will handle showing the Dashboard
-  // instead of the login page
-
+  // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    // Trim whitespace from username to prevent login errors
-    const trimmedUsername = username.trim();
+    setIsSubmitting(true);
     
-    if (!trimmedUsername) {
+    try {
+      // Trim whitespace from username
+      const trimmedUsername = username.trim();
+      
+      if (!trimmedUsername) {
+        toast({
+          title: "Validation error",
+          description: "Username cannot be empty",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      let response;
+      
+      if (isSignupMode) {
+        // Registration
+        response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: trimmedUsername,
+            password,
+            dailyMoveGoal: 450,
+            dailyExerciseGoal: 30,
+            dailyStandGoal: 12
+          }),
+          credentials: 'include'
+        });
+      } else {
+        // Login
+        response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            username: trimmedUsername, 
+            password 
+          }),
+          credentials: 'include'
+        });
+      }
+      
+      if (response.ok) {
+        toast({
+          title: isSignupMode ? "Registration successful" : "Login successful",
+          description: isSignupMode ? "Your account has been created" : "Welcome back!",
+        });
+        
+        // Redirect to the dashboard after successful login/registration
+        window.location.href = '/';
+      } else {
+        const errorText = await response.text();
+        
+        toast({
+          title: isSignupMode ? "Registration failed" : "Login failed",
+          description: errorText || (isSignupMode ? "Username may already be taken" : "Invalid username or password"),
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Auth error:", error);
+      
       toast({
         title: "Error",
-        description: "Username cannot be empty",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
-      return;
-    }
-
-    if (isSignupMode) {
-      // Registration
-      registerMutation.mutate({
-        username: trimmedUsername,
-        password,
-        dailyMoveGoal: 450,
-        dailyExerciseGoal: 30,
-        dailyStandGoal: 12
-      });
-    } else {
-      // Login
-      loginMutation.mutate({
-        username: trimmedUsername,
-        password
-      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -136,145 +131,61 @@ export default function LoginPage() {
           {isSignupMode ? "Create Account" : "Sign in to Fitness Tracker"}
         </h2>
         
-        {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm my-4 text-center">
-            {error}
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="relative">
-          <div className="mb-3">
-            <div className="relative">
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username" 
-                className="w-full h-9 pl-3 pr-16 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
-                required
-              />
-              
-              <div className="absolute right-0 top-0 flex items-center h-full">
-                {username && (
-                  <button 
-                    type="button"
-                    onClick={() => setUsername("")}
-                    className="text-gray-400 hover:text-gray-600 pr-1"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="8" cy="8" r="7.5" stroke="#CCCCCC"/>
-                      <path d="M5 5L11 11M5 11L11 5" stroke="#888888" strokeWidth="1.2"/>
-                    </svg>
-                  </button>
-                )}
-                
-                <button
-                  type="submit"
-                  disabled={loginMutation.isPending || registerMutation.isPending || !username || (!isSignupMode && !password)}
-                  className={`rounded-full w-7 h-7 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 mr-1 ${(loginMutation.isPending || registerMutation.isPending || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  aria-label="Continue"
-                >
-                  {(loginMutation.isPending || registerMutation.isPending) ? (
-                    <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Username input */}
+          <div>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              className="w-full h-9 px-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
+              required
+            />
           </div>
           
-          <div className="mb-5">
-            <div className="relative">
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="w-full h-9 pl-3 pr-16 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
-                required
-              />
-            </div>
+          {/* Password input */}
+          <div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full h-9 px-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
+              required
+            />
           </div>
           
-          <div className="mb-6">
-            <label className="inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-0" />
-              <span className="ml-2 text-[13px] text-gray-600">Keep me signed in</span>
-            </label>
+          {/* Submit button */}
+          <div>
+            <button
+              type="submit"
+              disabled={isSubmitting || !username || !password}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {isSignupMode ? 'Creating account...' : 'Signing in...'}
+                </div>
+              ) : (
+                <>{isSignupMode ? 'Create Account' : 'Sign In'}</>
+              )}
+            </button>
           </div>
           
-          <div className="mt-6 text-center text-[13px] text-blue-500 space-y-1">
+          {/* Toggle between login and signup */}
+          <div className="text-center">
             <button
               type="button"
-              onClick={() => setShowPasswordReset(true)}
-              className="text-blue-500 hover:text-blue-700 font-normal"
+              onClick={() => setIsSignupMode(!isSignupMode)}
+              className="text-blue-500 hover:text-blue-700 font-normal text-sm"
             >
-              Forgot username or password?
+              {isSignupMode ? 'Already have an account? Sign In' : "Don't have an account? Create one"}
             </button>
-            
-            <div className="pt-1">
-              <button
-                type="button"
-                onClick={() => setIsSignupMode(!isSignupMode)}
-                className="text-blue-500 hover:text-blue-700 font-normal"
-              >
-                {isSignupMode ? "Already have an account? Sign In" : "Create account"}
-              </button>
-            </div>
           </div>
         </form>
       </div>
-      
-      {/* Password Reset Dialog */}
-      <Dialog open={showPasswordReset} onOpenChange={setShowPasswordReset}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Reset Password</DialogTitle>
-            <DialogDescription>
-              Enter your email address and we'll send you instructions to reset your password.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <form onSubmit={handlePasswordReset} className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="reset-email" className="font-medium">
-                Email Address
-              </Label>
-              <Input
-                id="reset-email"
-                type="email"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-                placeholder="your.email@example.com"
-                className="bg-white text-black"
-                required
-              />
-            </div>
-            
-            <DialogFooter className="pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setShowPasswordReset(false)}
-                disabled={resetSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={!resetEmail || resetSubmitting}>
-                {resetSubmitting ? "Sending..." : "Send Reset Instructions"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
