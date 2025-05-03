@@ -7,6 +7,7 @@ import { setupPasswordReset } from "./reset-password";
 import { z } from "zod";
 import { insertWorkoutSchema } from "@shared/schema";
 import { pool } from "../db";
+import path from "path";
 
 // Middleware to check authentication
 function ensureAuthenticated(req: Request, res: Response, next: Function) {
@@ -26,6 +27,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Set up Spotify integration
   setupSpotifyRoutes(app);
+  
+  // Serve static login and signup HTML files
+  app.get('/login', (req, res) => {
+    if (req.isAuthenticated()) {
+      return res.redirect('/');
+    }
+    res.sendFile(path.resolve('./client/public/login.html'));
+  });
+  
+  app.get('/login.html', (req, res) => {
+    if (req.isAuthenticated()) {
+      return res.redirect('/');
+    }
+    res.sendFile(path.resolve('./client/public/login.html'));
+  });
+  
+  app.get('/signup', (req, res) => {
+    if (req.isAuthenticated()) {
+      return res.redirect('/');
+    }
+    res.sendFile(path.resolve('./client/public/signup.html'));
+  });
+  
+  app.get('/signup.html', (req, res) => {
+    if (req.isAuthenticated()) {
+      return res.redirect('/');
+    }
+    res.sendFile(path.resolve('./client/public/signup.html'));
+  });
 
   // User routes - rename to use same endpoint naming as setupAuth (/api/user)
   app.get('/api/user', ensureAuthenticated, (req, res) => {
