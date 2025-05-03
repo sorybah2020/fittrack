@@ -233,8 +233,11 @@ export default function WorkoutBuilder() {
                   <Input
                     id="distance"
                     type="number"
-                    value={formData.distance || ''}
-                    onChange={(e) => handleChange('distance', e.target.value ? parseFloat(e.target.value) : undefined)}
+                    value={formData.distance === undefined || formData.distance === null ? '' : formData.distance}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? undefined : parseFloat(e.target.value);
+                      handleChange('distance', value);
+                    }}
                     placeholder="e.g. 3.1"
                     min={0}
                     step={0.1}
@@ -263,7 +266,7 @@ export default function WorkoutBuilder() {
                 <Label htmlFor="notes">Notes (optional)</Label>
                 <Textarea
                   id="notes"
-                  value={formData.notes || ''}
+                  value={formData.notes === undefined || formData.notes === null ? '' : formData.notes}
                   onChange={(e) => handleChange('notes', e.target.value)}
                   placeholder="Add any notes about your workout"
                   rows={3}

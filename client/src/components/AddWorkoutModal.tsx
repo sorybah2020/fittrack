@@ -221,7 +221,19 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
                   <FormItem>
                     <FormLabel>Distance (miles)</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.1" min="0" {...field} />
+                      <Input 
+                        type="number" 
+                        step="0.1" 
+                        min="0" 
+                        value={field.value === null ? '' : field.value}
+                        onChange={(e) => {
+                          const value = e.target.value === '' ? '' : e.target.value;
+                          field.onChange(value);
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -264,7 +276,11 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
                   <FormControl>
                     <Textarea 
                       placeholder="Add any additional notes here..." 
-                      {...field} 
+                      value={field.value === null ? '' : field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />
