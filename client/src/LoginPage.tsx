@@ -1,20 +1,23 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from './hooks/use-auth';
+import { useLocation } from 'wouter';
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [isSignupMode, setIsSignupMode] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetSubmitting, setResetSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const { toast } = useToast();
+  const { user, loginMutation, registerMutation } = useAuth();
+  const [, setLocation] = useLocation();
 
   const handlePasswordReset = async (e: FormEvent) => {
     e.preventDefault();
@@ -55,80 +58,40 @@ export default function LoginPage() {
     }
   };
   
+  // We don't need to use redirection via useEffect here anymore
+  // If user is already authenticated, AppRoutes will handle showing the Dashboard
+  // instead of the login page
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
 
     // Trim whitespace from username to prevent login errors
     const trimmedUsername = username.trim();
     
     if (!trimmedUsername) {
-      setError("Username cannot be empty");
-      setLoading(false);
+      toast({
+        title: "Error",
+        description: "Username cannot be empty",
+        variant: "destructive"
+      });
       return;
     }
 
-    try {
-      const endpoint = isSignupMode ? "/api/register" : "/api/login";
-      // Show different default values in signup mode
-      const bodyData = isSignupMode 
-        ? { 
-            username: trimmedUsername, 
-            password,
-            dailyMoveGoal: 450,
-            dailyExerciseGoal: 30,
-            dailyStandGoal: 12
-          }
-        : { username: trimmedUsername, password };
-        
-      // Log what we're attempting to do
-      console.log(`Attempting ${isSignupMode ? "registration" : "login"} for user:`, trimmedUsername);
-      
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bodyData),
-        credentials: "include",
+    if (isSignupMode) {
+      // Registration
+      registerMutation.mutate({
+        username: trimmedUsername,
+        password,
+        dailyMoveGoal: 450,
+        dailyExerciseGoal: 30,
+        dailyStandGoal: 12
       });
-
-      console.log(`${isSignupMode ? "Registration" : "Login"} response status:`, response.status);
-      
-      // Get response as text first
-      const responseText = await response.text();
-      console.log(`${isSignupMode ? "Registration" : "Login"} response body:`, responseText);
-      
-      // Then parse as JSON if possible
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        console.error("Could not parse response as JSON:", e);
-      }
-      
-      if (!response.ok) {
-        throw new Error((data && data.message) || `${isSignupMode ? "Registration" : "Login"} failed with status ${response.status}`);
-      }
-
-      console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
-      
-      // Simple approach - force page reload to trigger Router authentication check
-      console.log("Login successful - reloading page to refresh auth state");
-      
-      // Redirect to homepage after successful login
-      window.location.href = "/";
-      
-      // As a fallback, reload the page if redirection doesn't happen
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
-    } catch (err) {
-      console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
-      setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
-    } finally {
-      setLoading(false);
+    } else {
+      // Login
+      loginMutation.mutate({
+        username: trimmedUsername,
+        password
+      });
     }
   };
 
@@ -208,11 +171,11 @@ export default function LoginPage() {
                 
                 <button
                   type="submit"
-                  disabled={loading || !username || (!isSignupMode && !password)}
-                  className={`rounded-full w-7 h-7 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 mr-1 ${(loading || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={loginMutation.isPending || registerMutation.isPending || !username || (!isSignupMode && !password)}
+                  className={`rounded-full w-7 h-7 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 mr-1 ${(loginMutation.isPending || registerMutation.isPending || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   aria-label="Continue"
                 >
-                  {loading ? (
+                  {(loginMutation.isPending || registerMutation.isPending) ? (
                     <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

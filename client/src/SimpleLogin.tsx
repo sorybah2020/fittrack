@@ -1,295 +1,278 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from './hooks/use-auth-simple';
+import { Loader2 } from "lucide-react";
 
 export default function SimpleLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [isSignupMode, setIsSignupMode] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetSubmitting, setResetSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const { user, error, login, register } = useAuth();
 
-  const handleFormSubmit = async (e: FormEvent) => {
+  const handlePasswordReset = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    if (isSignupMode) {
-      await handleRegister();
-    } else {
-      await handleLogin();
-    }
-  };
-
-  const handleLogin = async () => {
+    if (!resetEmail) return;
+    
+    setResetSubmitting(true);
     try {
-      console.log("Attempting login for user:", username);
-      
-      const response = await fetch("/api/login", {
+      const response = await fetch("/api/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
-        credentials: "include",
+        body: JSON.stringify({ email: resetEmail }),
       });
-
-      console.log("Login response status:", response.status);
-      
-      // Get response as text first
-      const responseText = await response.text();
-      console.log("Login response body:", responseText);
-      
-      // Then parse as JSON if possible
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        console.error("Could not parse response as JSON:", e);
-      }
       
       if (!response.ok) {
-        throw new Error((data && data.message) || `Login failed with status ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to request password reset");
       }
-
-      console.log("Login successful!");
       
-      // Redirect to home page (without the login parameter)
-      window.location.href = "/"; // This will load the main App
+      toast({
+        title: "Password Reset Requested",
+        description: "If an account exists with this email, you will receive password reset instructions.",
+        duration: 5000,
+      });
+      setShowPasswordReset(false);
+      setResetEmail("");
     } catch (err) {
-      console.error("Login error:", err);
-      setError(err instanceof Error ? err.message : "Login failed");
+      console.error("Password reset error:", err);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to request password reset",
+        duration: 5000,
+      });
     } finally {
-      setLoading(false);
+      setResetSubmitting(false);
     }
   };
 
-  const handleRegister = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Trim whitespace from username to prevent login errors
+    const trimmedUsername = username.trim();
+    
+    if (!trimmedUsername) {
+      toast({
+        title: "Error",
+        description: "Username cannot be empty",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      console.log("Attempting registration for user:", username);
-      
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          username, 
+      if (isSignupMode) {
+        // Registration
+        await register(
+          trimmedUsername,
           password,
-          dailyMoveGoal: 450,
-          dailyExerciseGoal: 30,
-          dailyStandGoal: 12
-        }),
-        credentials: "include",
-      });
-
-      console.log("Registration response status:", response.status);
-      
-      // Get response as text first
-      const responseText = await response.text();
-      console.log("Registration response body:", responseText);
-      
-      // Then parse as JSON if possible
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        console.error("Could not parse response as JSON:", e);
+          450, // dailyMoveGoal
+          30,  // dailyExerciseGoal
+          12   // dailyStandGoal
+        );
+      } else {
+        // Login
+        await login(trimmedUsername, password);
       }
-      
-      if (!response.ok) {
-        throw new Error((data && data.message) || `Registration failed with status ${response.status}`);
-      }
-
-      console.log("Registration successful!");
-      
-      // Redirect to home page after successful registration
-      window.location.href = "/";
-    } catch (err) {
-      console.error("Registration error:", err);
-      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#1D1D1F',
-      padding: '20px',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '350px',
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        padding: '30px 20px',
-        boxShadow: '0px 8px 24px rgba(0,0,0,0.2)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-      }}>
-        {/* Logo with colorful circles */}
-        <div style={{
-          marginBottom: '16px',
-          position: 'relative',
-          width: '80px',
-          height: '80px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          <div style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            background: 'url("data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'45\' fill=\'none\' stroke=\'%23F9BF8F\' stroke-width=\'1.5\' stroke-dasharray=\'1, 5\' /></svg>"), url("data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'45\' fill=\'none\' stroke=\'%2392EFFD\' stroke-width=\'1.5\' stroke-dasharray=\'1, 5\' transform=\'rotate(60 50 50)\' /></svg>"), url("data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'45\' fill=\'none\' stroke=\'%23C792FD\' stroke-width=\'1.5\' stroke-dasharray=\'1, 5\' transform=\'rotate(120 50 50)\' /></svg>")',
-            backgroundSize: 'contain'
-          }} />
-          <svg viewBox="0 0 24 30" width="30" height="35" style={{ position: 'relative', zIndex: 1 }}>
-            <path d="M18.06,13.62c-0.02-2.03,0.88-3.97,2.48-5.3c-0.97-1.35-2.47-2.26-4.12-2.53c-1.72-0.18-3.44,1.02-4.33,1.02 c-0.92,0-2.28-1.01-3.77-0.98C5.57,5.89,3.2,7.33,2.06,9.61c-2.48,4.3-0.63,10.63,1.74,14.11c1.19,1.69,2.56,3.55,4.36,3.49 c1.77-0.07,2.42-1.12,4.55-1.12c2.1,0,2.73,1.12,4.57,1.07c1.89-0.03,3.08-1.68,4.21-3.39c0.83-1.19,1.47-2.5,1.91-3.89 C20.65,18.41,18.08,16.37,18.06,13.62z" fill="black" />
-            <path d="M15.84,4.09c1.03-1.24,1.37-2.88,0.93-4.4c-1.49,0.3-2.78,1.16-3.66,2.44c-0.99,1.24-1.31,2.86-0.89,4.36 C13.77,6.19,15.04,5.32,15.84,4.09z" fill="black" />
-          </svg>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F5F5F7] p-4">
+      <div className="w-full max-w-sm bg-white rounded-3xl shadow-md p-8">
+        {/* Apple Rainbow Circle Logo */}
+        <div className="flex justify-center mb-6">
+          <div className="relative w-24 h-24">
+            <svg viewBox="0 0 100 100" className="absolute w-full h-full">
+              {/* Create rainbow circle made of dots */}
+              {Array.from({ length: 60 }).map((_, i) => {
+                const angle = (i * 6) * Math.PI / 180;
+                const radius = 40;
+                const x = 50 + radius * Math.cos(angle);
+                const y = 50 + radius * Math.sin(angle);
+                const dotSize = 1.5;
+                
+                // Generate color based on position in circle
+                const hue = (i * 6) % 360;
+                return (
+                  <circle 
+                    key={i} 
+                    cx={x} 
+                    cy={y} 
+                    r={dotSize} 
+                    fill={`hsl(${hue}, 80%, 60%)`}
+                    opacity="0.8"
+                  />
+                )
+              })}
+              
+              {/* Apple Logo in Center */}
+              <g transform="translate(50, 50) scale(0.05)">
+                <path fill="#000" d="M213.803 167.03c.442 47.295 41.7 63.032 42.197 63.275-.367 1.097-6.798 23.295-22.277 46.155-13.578 19.711-27.699 39.22-49.755 39.629-21.675.398-28.708-12.73-53.496-12.73-24.812 0-32.585 12.343-53.15 13.13-21.12.788-37.274-21.132-50.978-40.785C8.31 244.442-18.01 170.047 17.44 120.687c17.415-24.356 48.554-39.823 82.2-40.22 25.629-.392 49.84 17.147 65.44 17.147 15.584 0 44.747-21.197 75.715-18.074 12.91.512 49.06 5.194 72.322 39.016-.893.564-43.07 24.76-42.617 73.993M174.24 50.199c13.626-16.595 22.853-39.35 20.366-62.201C172.94-9.571 153.047.822 139.156 17.066c-12.957 15.768-24.269 35.696-20.024 56.628 21.756 1.634 44.01-13.802 55.108-23.495"/>
+              </g>
+            </svg>
+          </div>
         </div>
-
-        <h2 style={{
-          fontSize: '24px',
-          fontWeight: '500',
-          margin: '0 0 4px 0',
-          color: '#1D1D1F'
-        }}>
-          {isSignupMode ? "Create Account" : "Sign In"}
+        
+        <h2 className="text-[21px] font-medium text-center mb-7 text-gray-900">
+          {isSignupMode ? "Create Account" : "Sign in to Fitness Tracker"}
         </h2>
         
-        <p style={{
-          fontSize: '13px',
-          color: '#86868b',
-          margin: '0 0 25px 0',
-          textAlign: 'center'
-        }}>
-          {isSignupMode ? "Sign up for Fitness Tracker" : "Sign in to Fitness Tracker"}
-        </p>
-        
         {error && (
-          <div style={{
-            backgroundColor: '#FFECEC',
-            color: '#FF3B30',
-            padding: '10px',
-            borderRadius: '8px',
-            fontSize: '13px',
-            width: '100%',
-            marginBottom: '15px',
-            textAlign: 'center'
-          }}>
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm my-4 text-center">
             {error}
           </div>
         )}
         
-        <form onSubmit={handleFormSubmit} style={{ width: '100%' }}>
-          <div style={{ marginBottom: '15px', position: 'relative' }}>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              style={{
-                width: '100%',
-                padding: '12px 35px 12px 12px',
-                border: '1px solid #d2d2d7',
-                borderRadius: '8px',
-                fontSize: '16px',
-                boxSizing: 'border-box'
-              }}
-            />
-            {username && (
+        <form onSubmit={handleSubmit} className="relative">
+          <div className="mb-3">
+            <div className="relative">
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username" 
+                className="w-full h-9 pl-3 pr-16 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
+                required
+              />
+              
+              <div className="absolute right-0 top-0 flex items-center h-full">
+                {username && (
+                  <button 
+                    type="button"
+                    onClick={() => setUsername("")}
+                    className="text-gray-400 hover:text-gray-600 pr-1"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="8" r="7.5" stroke="#CCCCCC"/>
+                      <path d="M5 5L11 11M5 11L11 5" stroke="#888888" strokeWidth="1.2"/>
+                    </svg>
+                  </button>
+                )}
+                
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !username || (!isSignupMode && !password)}
+                  className={`rounded-full w-7 h-7 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 mr-1 ${(isSubmitting || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-label="Continue"
+                >
+                  {isSubmitting ? (
+                    <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mb-5">
+            <div className="relative">
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full h-9 pl-3 pr-16 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="mb-6">
+            <label className="inline-flex items-center cursor-pointer">
+              <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-0" />
+              <span className="ml-2 text-[13px] text-gray-600">Keep me signed in</span>
+            </label>
+          </div>
+          
+          <div className="mt-6 text-center text-[13px] text-blue-500 space-y-1">
+            <button
+              type="button"
+              onClick={() => setShowPasswordReset(true)}
+              className="text-blue-500 hover:text-blue-700 font-normal"
+            >
+              Forgot username or password?
+            </button>
+            
+            <div className="pt-1">
               <button
                 type="button"
-                onClick={() => setUsername('')}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0
-                }}
+                onClick={() => setIsSignupMode(!isSignupMode)}
+                className="text-blue-500 hover:text-blue-700 font-normal"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#8e8e93">
-                  <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
-                </svg>
+                {isSignupMode ? "Already have an account? Sign In" : "Create account"}
               </button>
-            )}
+            </div>
           </div>
-          
-          <div style={{ marginBottom: '20px' }}>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #d2d2d7',
-                borderRadius: '8px',
-                fontSize: '16px',
-                boxSizing: 'border-box'
-              }}
-            />
-          </div>
-          
-          <button 
-            type="submit"
-            disabled={loading || !username || !password}
-            style={{
-              width: '100%',
-              padding: '12px',
-              marginBottom: '15px',
-              backgroundColor: '#0070F3',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '15px',
-              fontWeight: '500',
-              cursor: (loading || !username || !password) ? 'default' : 'pointer',
-              opacity: (loading || !username || !password) ? 0.7 : 1,
-              textAlign: 'center'
-            }}
-          >
-            {loading ? "Processing..." : isSignupMode ? "Create Account" : "Sign In"}
-          </button>
         </form>
-        
-        <div style={{ 
-          marginTop: '10px',
-          width: '100%',
-          textAlign: 'center'
-        }}>
-          <button 
-            type="button"
-            onClick={() => setIsSignupMode(!isSignupMode)}
-            style={{
-              backgroundColor: 'transparent',
-              color: '#0070F3',
-              border: 'none',
-              fontSize: '14px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              padding: '8px 16px'
-            }}
-          >
-            {isSignupMode 
-              ? "Already have an account? Sign In" 
-              : "Don't have an account? Sign Up"}
-          </button>
-        </div>
       </div>
+      
+      {/* Password Reset Dialog */}
+      <Dialog open={showPasswordReset} onOpenChange={setShowPasswordReset}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Enter your email address and we'll send you instructions to reset your password.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handlePasswordReset} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reset-email" className="font-medium">
+                Email Address
+              </Label>
+              <Input
+                id="reset-email"
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="your.email@example.com"
+                className="bg-white text-black"
+                required
+              />
+            </div>
+            
+            <DialogFooter className="pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowPasswordReset(false)}
+                disabled={resetSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!resetEmail || resetSubmitting}>
+                {resetSubmitting ? "Sending..." : "Send Reset Instructions"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

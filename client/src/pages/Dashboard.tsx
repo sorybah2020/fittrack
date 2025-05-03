@@ -12,7 +12,7 @@ import { AddWorkoutModal } from "@/components/AddWorkoutModal";
 import { QuickStartWorkout } from "@/components/QuickStartWorkout";
 import { Activity, Workout, WeeklyActivity, WorkoutType } from "@/lib/fitness-types";
 import { Link } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "../SimpleAuth";
 
 export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -22,15 +22,15 @@ export default function Dashboard() {
   
   const { user } = useAuth();
   
-  const { data: activity } = useQuery({
+  const { data: activity } = useQuery<Activity>({
     queryKey: ['/api/activities', formattedDate],
   });
   
-  const { data: workouts = [] } = useQuery({
+  const { data: workouts = [] } = useQuery<Workout[]>({
     queryKey: ['/api/workouts', formattedDate],
   });
   
-  const { data: weeklyActivity = [] } = useQuery({
+  const { data: weeklyActivity = [] } = useQuery<WeeklyActivity[]>({
     queryKey: ['/api/activities/weekly'],
   });
   
