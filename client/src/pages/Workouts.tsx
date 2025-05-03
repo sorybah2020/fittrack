@@ -7,6 +7,8 @@ import { AddWorkoutModal } from "@/components/AddWorkoutModal";
 import { EditWorkoutModal } from "@/components/EditWorkoutModal";
 import { Workout, WorkoutType } from "@/lib/fitness-types";
 import { useParams, useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Select,
   SelectContent,
@@ -15,7 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, LogOut } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Workouts() {
@@ -26,6 +29,8 @@ export default function Workouts() {
   const [searchTerm, setSearchTerm] = useState("");
   const params = useParams();
   const [, navigate] = useLocation();
+  const { toast } = useToast();
+  const { logoutMutation } = useAuth();
   
   // If we have a workout ID in the URL, redirect to the main workouts page
   useEffect(() => {

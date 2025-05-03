@@ -3,7 +3,6 @@ import { useLocation, Link } from "wouter";
 import { 
   BarChart3, 
   Heart, 
-  User, 
   Plus,
   PlayCircle,
 } from "lucide-react";
@@ -38,11 +37,7 @@ export function BottomNavbar({ onAddClick }: BottomNavbarProps) {
       icon: <PlayCircle className="h-6 w-6" />,
       path: "/workout-videos"
     },
-    {
-      label: "Profile",
-      icon: <User className="h-6 w-6" />,
-      path: "/profile"
-    }
+
   ];
   
   return (
