@@ -182,37 +182,42 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username" 
-                className="w-full h-9 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
+                className="w-full h-9 pl-3 pr-16 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
                 required
               />
-              {username && (
-                <div className="absolute right-8 top-[9px] text-gray-400">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
+              
+              <div className="absolute right-0 top-0 flex items-center h-full">
+                {username && (
+                  <button 
+                    type="button"
                     onClick={() => setUsername("")}
-                    className="cursor-pointer hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-600 pr-1"
                   >
-                    <circle cx="8" cy="8" r="7.5" stroke="#CCCCCC"/>
-                    <path d="M5 5L11 11M5 11L11 5" stroke="#888888" strokeWidth="1.2"/>
-                  </svg>
-                </div>
-              )}
-              <button
-                type="submit"
-                disabled={loading || !username || (!isSignupMode && !password)}
-                className={`absolute right-2 top-[7px] rounded-full w-5 h-5 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 ${(loading || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                aria-label="Continue"
-              >
-                {loading ? (
-                  <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="8" cy="8" r="7.5" stroke="#CCCCCC"/>
+                      <path d="M5 5L11 11M5 11L11 5" stroke="#888888" strokeWidth="1.2"/>
+                    </svg>
+                  </button>
                 )}
-              </button>
+                
+                <button
+                  type="submit"
+                  disabled={loading || !username || (!isSignupMode && !password)}
+                  className={`rounded-full w-7 h-7 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 mr-1 ${(loading || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  aria-label="Continue"
+                >
+                  {loading ? (
+                    <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
           
@@ -225,7 +230,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full h-9 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
+                  className="w-full h-9 pl-3 pr-16 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
                   required
                 />
               </div>
