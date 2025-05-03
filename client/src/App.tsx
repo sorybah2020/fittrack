@@ -1,6 +1,4 @@
-import { Route, Switch, useLocation } from "wouter";
-import { useEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
+import { useState, useEffect } from "react";
 import Dashboard from "@/pages/Dashboard";
 import Workouts from "@/pages/Workouts";
 import WorkoutBuilder from "@/pages/WorkoutBuilder";
@@ -8,77 +6,77 @@ import WorkoutVideos from "@/pages/WorkoutVideos";
 import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
-import SignUp from "./SignUp";
-import FinalLogin from "./FinalLogin";
 import NotFound from "@/pages/not-found";
-import { useAuth } from "./hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
-// Protected route component that redirects to login if not authenticated
-function ProtectedRoute({ 
-  path, 
-  component: Component 
-}: { 
-  path: string; 
-  component: () => React.ReactNode;
-}) {
-  const { user, isLoading } = useAuth();
-  const [, navigate] = useLocation();
-  
-  // Use useEffect to handle navigation after render
-  useEffect(() => {
-    if (!isLoading && !user) {
-      navigate("/login");
-    }
-  }, [isLoading, user, navigate]);
+function App() {
+  const [page, setPage] = useState('/');
+  const [loading, setLoading] = useState(false);
 
-  // If still loading or redirecting, show loader
-  if (isLoading || (!user && !isLoading)) {
+  useEffect(() => {
+    function handleUrlChange() {
+      setPage(window.location.pathname);
+    }
+
+    window.addEventListener('popstate', handleUrlChange);
+    
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, []);
+
+  const navigate = (path: string) => {
+    window.history.pushState({}, '', path);
+    setPage(path);
+  };
+
+  const handleLogout = async () => {
+    setLoading(true);
+    
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include"
+      });
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <Route path={path}>
-        <div className="flex items-center justify-center min-h-screen bg-black">
-          <Loader2 className="h-8 w-8 animate-spin text-red-500" />
-        </div>
-      </Route>
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+      </div>
     );
   }
 
-  // If we have a user and are not loading, show the component
-  return (
-    <Route path={path}>
-      <Component />
-    </Route>
-  );
-}
-
-function App() {
-  return (
-    <>
-      <Switch>
-        <Route path="/signup">
-          <SignUp />
-        </Route>
-        
-        <Route path="/login">
-          <FinalLogin />
-        </Route>
-        
-        <ProtectedRoute path="/" component={Dashboard} />
-        <ProtectedRoute path="/workouts/:id" component={Workouts} />
-        <ProtectedRoute path="/workouts" component={Workouts} />
-        <ProtectedRoute path="/workout-builder" component={WorkoutBuilder} />
-        <ProtectedRoute path="/workout-videos" component={WorkoutVideos} />
-        <ProtectedRoute path="/workout-music" component={WorkoutMusic} />
-        <ProtectedRoute path="/progress" component={Progress} />
-        <ProtectedRoute path="/profile" component={Profile} />
-
-        <Route path="*">
-          <NotFound />
-        </Route>
-      </Switch>
-      <Toaster />
-    </>
-  );
+  // Simple manual routing
+  switch (page) {
+    case '/':
+      return <Dashboard />;
+    case '/workouts':
+      return <Workouts />;
+    case '/workout-builder':
+      return <WorkoutBuilder />;
+    case '/workout-videos':
+      return <WorkoutVideos />;
+    case '/workout-music':
+      return <WorkoutMusic />;
+    case '/progress':
+      return <Progress />;
+    case '/profile':
+      return <Profile />;
+    default:
+      if (page.startsWith('/workouts/')) {
+        const id = parseInt(page.split('/')[2]);
+        return <Workouts />;
+      }
+      return <NotFound />;
+  }
 }
 
 export default App;
