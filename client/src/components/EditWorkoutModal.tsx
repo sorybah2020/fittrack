@@ -215,7 +215,7 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                           type="number" 
                           min={1} 
                           value={field.value === null ? '' : field.value}
-                          onChange={(e) => field.onChange(e.target.value === '' ? '' : e.target.value)}
+                          onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
                           onBlur={field.onBlur}
                           name={field.name}
                           ref={field.ref}
@@ -291,7 +291,7 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                         placeholder="Add some notes about your workout (optional)"
                         className="resize-none" 
                         value={field.value === null ? '' : field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
+                        onChange={(e) => field.onChange(e.target.value || '')}
                         onBlur={field.onBlur}
                         name={field.name}
                         ref={field.ref}

@@ -207,7 +207,15 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
                   <FormItem>
                     <FormLabel>Duration (min)</FormLabel>
                     <FormControl>
-                      <Input type="number" min="1" {...field} />
+                      <Input 
+                        type="number" 
+                        min="1" 
+                        value={field.value === null ? '' : field.value}
+                        onChange={(e) => field.onChange(e.target.value || '')}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -277,7 +285,7 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
                     <Textarea 
                       placeholder="Add any additional notes here..." 
                       value={field.value === null ? '' : field.value}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      onChange={(e) => field.onChange(e.target.value || '')}
                       onBlur={field.onBlur}
                       name={field.name}
                       ref={field.ref}
