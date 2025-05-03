@@ -22,15 +22,15 @@ export default function Dashboard() {
   
   const { user } = useAuth();
   
-  const { data: activity } = useQuery({
+  const { data: activity } = useQuery<any>({
     queryKey: ['/api/activities', formattedDate],
   });
   
-  const { data: workouts = [] } = useQuery({
+  const { data: workouts = [] } = useQuery<Workout[]>({
     queryKey: ['/api/workouts', formattedDate],
   });
   
-  const { data: weeklyActivity = [] } = useQuery({
+  const { data: weeklyActivity = [] } = useQuery<WeeklyActivity[]>({
     queryKey: ['/api/activities/weekly'],
   });
   
@@ -95,7 +95,7 @@ export default function Dashboard() {
         <div className="bg-card rounded-2xl overflow-hidden">
           <div className="p-4">
             <h2 className="text-sm font-medium mb-3 text-white/80">Activity Rings</h2>
-            {activity && (
+            {activity && 'caloriesBurned' in activity && (
               <ActivitySummary data={activity} />
             )}
           </div>
@@ -120,14 +120,9 @@ export default function Dashboard() {
               <div className="text-3xl font-bold text-white mr-3">13,818</div>
               <div className="flex-1 h-16 flex items-end">
                 {/* Simple bar graph visualization */}
-                <div className="h-6 w-1 bg-purple-600 mx-0.5"></div>
-                <div className="h-8 w-1 bg-purple-600 mx-0.5"></div>
-                <div className="h-4 w-1 bg-purple-600 mx-0.5"></div>
-                <div className="h-10 w-1 bg-purple-600 mx-0.5"></div>
-                <div className="h-7 w-1 bg-purple-600 mx-0.5"></div>
-                <div className="h-16 w-1 bg-purple-600 mx-0.5"></div>
-                <div className="h-9 w-1 bg-purple-600 mx-0.5"></div>
-                <div className="h-12 w-1 bg-purple-600 mx-0.5"></div>
+                {[6, 8, 4, 10, 7, 16, 9, 12].map((height, i) => (
+                  <div key={`step-bar-${i}`} className={`h-${height} w-1 bg-purple-600 mx-0.5`}></div>
+                ))}
                 {/* Additional bars for visualization */}
                 {Array(8).fill(0).map((_, i) => (
                   <div key={i} className={`h-${Math.floor(Math.random() * 16) + 3} w-1 bg-purple-600 mx-0.5`}></div>
