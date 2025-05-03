@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, Trophy, Award, Target, Save } from "lucide-react";
+import { ChevronLeft, Trophy, Award, Target, Save, LogOut } from "lucide-react";
 import { Link } from "wouter";
 
 const profileFormSchema = z.object({
@@ -112,7 +112,19 @@ export default function Profile() {
     updateProfileMutation.mutate(data);
   }
   
-  // Logout functionality moved to the Login page
+  function handleLogout() {
+    // Post to logout API and redirect to login page
+    fetch('/api/logout', {
+      method: 'POST',
+      credentials: 'include'
+    }).then(() => {
+      navigate('/login');
+    }).catch(error => {
+      console.error('Logout error:', error);
+      // Redirect anyway
+      navigate('/login');
+    });
+  }
   
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -324,10 +336,22 @@ export default function Profile() {
                   />
                 </div>
                 
-                <Button type="submit" className="w-full">
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Changes
-                </Button>
+                <div className="space-y-4">
+                  <Button type="submit" className="w-full">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Changes
+                  </Button>
+                  
+                  <Button 
+                    type="button" 
+                    variant="destructive" 
+                    className="w-full"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Log Out
+                  </Button>
+                </div>
               </form>
             </Form>
           </CardContent>
