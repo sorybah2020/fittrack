@@ -103,11 +103,15 @@ export default function LoginPage() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Force a complete page reload to ensure proper auth state handling
+      // Use a hard page reload with a direct URL to make sure we completely refresh
+      window.location.href = "/"; 
+      
+      // If the above doesn't redirect immediately, force a complete refresh
       setTimeout(() => {
-        window.location.href = "/";
+        document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;"><p>Login successful! Redirecting to dashboard...</p></div>';
+        window.location.href = '/';
         window.location.reload();
-      }, 100);
+      }, 200);
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
