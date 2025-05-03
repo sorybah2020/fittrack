@@ -46,9 +46,6 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Switch>
-          <Route path="/auth">
-            <LoginPage />
-          </Route>
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/workouts/:id" component={Workouts} />
           <ProtectedRoute path="/workouts" component={Workouts} />
