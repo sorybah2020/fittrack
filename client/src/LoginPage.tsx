@@ -165,7 +165,7 @@ export default function LoginPage() {
           </div>
         )}
         
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="relative">
           <div className="mb-3">
             <div className="relative">
               <input
@@ -178,7 +178,7 @@ export default function LoginPage() {
                 required
               />
               {username && (
-                <div className="absolute right-3 top-[9px] text-gray-400">
+                <div className="absolute right-8 top-[9px] text-gray-400">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
                     onClick={() => setUsername("")}
                     className="cursor-pointer hover:text-gray-600"
@@ -188,6 +188,23 @@ export default function LoginPage() {
                   </svg>
                 </div>
               )}
+              <button
+                type="submit"
+                disabled={loading || !username || (!isSignupMode && !password)}
+                className={`absolute right-2 top-[7px] rounded-full w-5 h-5 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 ${(loading || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                aria-label="Continue"
+              >
+                {loading ? (
+                  <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
           
@@ -214,12 +231,6 @@ export default function LoginPage() {
             </label>
           </div>
           
-          <button
-            type="submit"
-            disabled={loading || !username || (!isSignupMode && !password)}
-            className={`hidden`}
-          />
-          
           <div className="mt-6 text-center text-[13px] text-blue-500 space-y-1">
             <button
               type="button"
@@ -238,27 +249,6 @@ export default function LoginPage() {
                 {isSignupMode ? "Already have an Apple ID? Sign In" : "Create Apple ID"}
               </button>
             </div>
-          </div>
-          
-          {/* Arrow button positioned within the username input field */}
-          <div>
-            <button
-              type="submit"
-              disabled={loading || !username || (!isSignupMode && !password)}
-              className={`absolute right-14 sm:right-[calc(50%-95px)] -mt-[29px] rounded-full w-5 h-5 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 ${(loading || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
-              aria-label="Continue"
-            >
-              {loading ? (
-                <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
           </div>
         </form>
       </div>
