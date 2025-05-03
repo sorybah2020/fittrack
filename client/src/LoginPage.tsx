@@ -1,4 +1,9 @@
 import { FormEvent, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -6,7 +11,50 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignupMode, setIsSignupMode] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetSubmitting, setResetSubmitting] = useState(false);
+  const { toast } = useToast();
 
+  const handlePasswordReset = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail) return;
+    
+    setResetSubmitting(true);
+    try {
+      const response = await fetch("/api/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to request password reset");
+      }
+      
+      toast({
+        title: "Password Reset Requested",
+        description: "If an account exists with this email, you will receive password reset instructions.",
+        duration: 5000,
+      });
+      setShowPasswordReset(false);
+      setResetEmail("");
+    } catch (err) {
+      console.error("Password reset error:", err);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to request password reset",
+        duration: 5000,
+      });
+    } finally {
+      setResetSubmitting(false);
+    }
+  };
+  
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
@@ -138,7 +186,7 @@ export default function LoginPage() {
           </button>
         </form>
         
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-4">
           <button
             type="button"
             onClick={() => setIsSignupMode(!isSignupMode)}
@@ -148,8 +196,63 @@ export default function LoginPage() {
               ? "Already have an account? Sign In" 
               : "Don't have an account? Sign Up"}
           </button>
+          
+          {!isSignupMode && (
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowPasswordReset(true)}
+                className="text-blue-600 hover:text-blue-800 text-sm mt-3"
+              >
+                Forgot username or password?
+              </button>
+            </div>
+          )}
         </div>
       </div>
+      
+      {/* Password Reset Dialog */}
+      <Dialog open={showPasswordReset} onOpenChange={setShowPasswordReset}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Enter your email address and we'll send you instructions to reset your password.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handlePasswordReset} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reset-email" className="font-medium">
+                Email Address
+              </Label>
+              <Input
+                id="reset-email"
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="your.email@example.com"
+                className="bg-white text-black"
+                required
+              />
+            </div>
+            
+            <DialogFooter className="pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowPasswordReset(false)}
+                disabled={resetSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!resetEmail || resetSubmitting}>
+                {resetSubmitting ? "Sending..." : "Send Reset Instructions"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
