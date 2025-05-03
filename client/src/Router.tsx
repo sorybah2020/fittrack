@@ -12,8 +12,19 @@ export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Check authentication status
+  // Check authentication status - but only once when the app starts
   useEffect(() => {
+    // Use URL check to avoid excessive API calls
+    // If we're on /login or /signup pages, we don't need to check auth
+    const currentPath = window.location.pathname;
+    if (currentPath === '/login' || currentPath === '/login.html' || 
+        currentPath === '/signup' || currentPath === '/signup.html') {
+      setIsAuthenticated(false);
+      setLoading(false);
+      return;
+    }
+    
+    // Only check auth if we're not on login/signup pages
     async function checkAuth() {
       try {
         const response = await fetch('/api/user', {
@@ -22,11 +33,15 @@ export default function Router() {
         if (response.ok) {
           setIsAuthenticated(true);
         } else {
-          setIsAuthenticated(false);
+          // If not authenticated, redirect to login page
+          window.location.href = '/login';
+          return;
         }
       } catch (error) {
         console.error('Auth check error:', error);
         setIsAuthenticated(false);
+        window.location.href = '/login';
+        return;
       } finally {
         setLoading(false);
       }
