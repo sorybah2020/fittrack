@@ -207,6 +207,10 @@ export function UserProvider({
       if (response.ok) {
         setUser(null);
         setError(null);
+        
+        // A small delay to ensure state changes are processed
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         return true;
       } else {
         const errorText = await response.text();

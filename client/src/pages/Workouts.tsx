@@ -60,6 +60,9 @@ export default function Workouts({ params }: { params?: RouteParams } = {}) {
           title: "Logged out",
           description: "You have been successfully logged out.",
         });
+        
+        // Force page reload to reflect logged out state
+        window.location.href = '/';
       } else {
         throw new Error("Logout failed");
       }
