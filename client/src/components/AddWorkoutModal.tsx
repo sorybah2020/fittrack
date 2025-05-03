@@ -40,8 +40,8 @@ const formSchema = z.object({
   name: z.string().min(2, "Workout name is required"),
   workoutTypeId: z.string().min(1, "Please select a workout type"),
   date: z.date(),
-  duration: z.string().min(1, "Duration is required"),
-  distance: z.string().optional(),
+  duration: z.coerce.number().min(1, "Duration must be at least 1 minute"),
+  distance: z.coerce.number().optional(),
   intensity: z.enum(["low", "medium", "high"]),
   notes: z.string().optional(),
 });
@@ -73,8 +73,8 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
       name: "",
       workoutTypeId: "",
       date: new Date(),
-      duration: "",
-      distance: "",
+      duration: undefined,
+      distance: undefined,
       intensity: "medium",
       notes: "",
     },
@@ -82,12 +82,11 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
   
   const addWorkoutMutation = useMutation({
     mutationFn: async (data: FormValues) => {
-      // Convert duration from string to number and format date as ISO string
+      // Format date as ISO string and ensure proper types
       const workoutData = {
         ...data,
         workoutTypeId: parseInt(data.workoutTypeId),
-        duration: parseInt(data.duration),
-        distance: data.distance ? parseFloat(data.distance) : undefined,
+        // duration and distance are already numbers from zod coercion
         date: data.date.toISOString().split('T')[0], // Format as YYYY-MM-DD
       };
       
