@@ -60,19 +60,28 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
+    // Trim whitespace from username to prevent login errors
+    const trimmedUsername = username.trim();
+    
+    if (!trimmedUsername) {
+      setError("Username cannot be empty");
+      setLoading(false);
+      return;
+    }
+
     try {
       const endpoint = isSignupMode ? "/api/register" : "/api/login";
       const bodyData = isSignupMode 
         ? { 
-            username, 
+            username: trimmedUsername, 
             password,
             dailyMoveGoal: 450,
             dailyExerciseGoal: 30,
             dailyStandGoal: 12
           }
-        : { username, password };
+        : { username: trimmedUsername, password };
 
-      console.log(`Attempting ${isSignupMode ? "registration" : "login"} for user:`, username);
+      console.log(`Attempting ${isSignupMode ? "registration" : "login"} for user:`, trimmedUsername);
       
       const response = await fetch(endpoint, {
         method: "POST",
@@ -155,7 +164,7 @@ export default function LoginPage() {
         </div>
         
         <h2 className="text-[21px] font-medium text-center mb-7 text-gray-900">
-          Sign in with Apple ID
+          Sign in to Fitness Tracker
         </h2>
         
         {error && (
@@ -172,7 +181,7 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Apple ID" 
+                placeholder="Username" 
                 className="w-full h-9 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
                 required
               />
@@ -236,7 +245,7 @@ export default function LoginPage() {
               onClick={() => setShowPasswordReset(true)}
               className="text-blue-500 hover:text-blue-700 font-normal"
             >
-              Forgot Apple ID or password?
+              Forgot username or password?
             </button>
             
             <div className="pt-1">
@@ -245,7 +254,7 @@ export default function LoginPage() {
                 onClick={() => setIsSignupMode(!isSignupMode)}
                 className="text-blue-500 hover:text-blue-700 font-normal"
               >
-                {isSignupMode ? "Already have an Apple ID? Sign In" : "Create Apple ID"}
+                {isSignupMode ? "Already have an account? Sign In" : "Create account"}
               </button>
             </div>
           </div>
