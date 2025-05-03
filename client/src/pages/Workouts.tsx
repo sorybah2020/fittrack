@@ -54,25 +54,32 @@ export default function Workouts({ params }: { params?: RouteParams } = {}) {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
+      // First, try the normal logout
       const success = await logout();
-      if (success) {
-        toast({
-          title: "Logged out",
-          description: "You have been successfully logged out.",
-        });
+      
+      // Regardless of the success status, we'll force a hard reset of the app state
+      toast({
+        title: "Logging out",
+        description: "Please wait while we log you out...",
+      });
+      
+      // Short delay to allow toast to show
+      setTimeout(() => {
+        // Clear any local storage items related to auth if they exist
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user');
         
-        // Force page reload to reflect logged out state
+        // Force a hard refresh to completely reset the application state
         window.location.href = '/';
-      } else {
-        throw new Error("Logout failed");
-      }
+      }, 500);
+      
     } catch (error) {
+      console.error("Logout error:", error);
       toast({
         variant: "destructive",
         title: "Logout failed",
         description: "There was a problem logging out. Please try again.",
       });
-    } finally {
       setIsLoggingOut(false);
     }
   };
