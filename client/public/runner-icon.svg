@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <linearGradient id="runner-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFF00"/>
+      <stop offset="20%" stop-color="#FFC107"/>
+      <stop offset="50%" stop-color="#FF9800"/>
+      <stop offset="80%" stop-color="#FF5722"/>
+      <stop offset="100%" stop-color="#F44336"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#runner-gradient)" d="M180.5,100.5c-7-2.3-10.8-10-8.5-17c2.3-7,10-10.8,17-8.5c7,2.3,10.8,10,8.5,17
+    C195.2,99,187.5,102.8,180.5,100.5z M218,185.6l-15-50.9l-14.1-12.9c-3.9-3.6-7-4-13-2.8c-6,1.2-15.7,4.9-25.5,8.5
+    c-9.8,3.6-14,7.1-17.2,13.4l-25.1,50.4l14.5,7.2l23.4-46.8l9.2-3.5l-16.9,64.7l-43.8,28.9l8.4,12.6l48.2-25.9
+    c2.9-1.6,5.3-3.9,7-6.7l6.4-10.7l20.7,29l24.6,7.9l7.3-13.5l-22.4-5l-15.3-27.7l10.3-39.6l8.6,29.2L218,185.6z"/>
+  <path fill="url(#runner-gradient)" d="M250,150c0,55.2-44.8,100-100,100S50,205.2,50,150S94.8,50,150,50S250,94.8,250,150z" style="opacity:0.1"/>
+</svg>
