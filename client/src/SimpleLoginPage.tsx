@@ -1,15 +1,12 @@
 import { useState, FormEvent } from "react";
-import { useLocation } from "wouter";
 
-export default function AppleStyleLogin() {
+export default function SimpleLoginPage() {
   const [isSignupMode, setIsSignupMode] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
-  const [, setLocation] = useLocation();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,10 +46,6 @@ export default function AppleStyleLogin() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Store auth state in localStorage for persistence
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("authTimestamp", Date.now().toString());
-      
       // Force a complete app reload to apply authentication
       window.location.href = "/";
     } catch (err) {
@@ -64,27 +57,19 @@ export default function AppleStyleLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
-        {/* Apple-style colorful logo */}
-        <div className="flex justify-center mb-6">
-          <div className="relative w-16 h-16">
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <circle cx="50" cy="50" r="40" fill="none" stroke="#FF7D50" strokeWidth="2" strokeDasharray="10 2" />
-              <circle cx="50" cy="50" r="34" fill="none" stroke="#40BDFF" strokeWidth="2" strokeDasharray="8 3" />
-              <circle cx="50" cy="50" r="28" fill="none" stroke="#B55AFF" strokeWidth="2" strokeDasharray="6 4" />
-              <circle cx="50" cy="50" r="22" fill="none" stroke="#FF5A5A" strokeWidth="2" strokeDasharray="5 2" />
-              <circle cx="50" cy="50" r="16" fill="none" stroke="#4ADE80" strokeWidth="2" strokeDasharray="4 2" />
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+      <div className="w-full max-w-md bg-white p-6 sm:p-8">
+        {/* Apple-style logo */}
+        <div className="flex justify-center mb-8">
+          <div className="relative w-20 h-20">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 rounded-full opacity-30"></div>
+            <svg viewBox="0 0 24 24" className="h-14 w-14 mx-auto text-black relative z-10">
+              <path fill="currentColor" d="M17.05,20.28c-0.98,0.95-2.05,0.8-3.08,0.35c-1.09-0.46-2.09-0.48-3.24,0c-1.44,0.62-2.2,0.44-3.06-0.35 C2.79,15.5,3.51,7.6,8.56,7.31c1.65,0.07,2.47,0.95,3.56,0.97c1.19-0.15,2.09-1.05,3.6-1.1c1.58,0.06,2.77,0.87,3.55,2.18 c-3.21,1.93-2.62,6.18,0.38,7.53C19.11,18.1,18.36,19.15,17.05,20.28z M13.06,3.14c1.36-1.78,3.9-1.88,4.29-1.9 C16.5,3.95,14.23,4.8,13.06,3.14z"/>
             </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-6 h-6 text-black">
-                <path fill="currentColor" d="M17.05,20.28c-0.98,0.95-2.05,0.8-3.08,0.35c-1.09-0.46-2.09-0.48-3.24,0c-1.44,0.62-2.2,0.44-3.06-0.35 C2.79,15.5,3.51,7.6,8.56,7.31c1.65,0.07,2.47,0.95,3.56,0.97c1.19-0.15,2.09-1.05,3.6-1.1c1.58,0.06,2.77,0.87,3.55,2.18 c-3.21,1.93-2.62,6.18,0.38,7.53C19.11,18.1,18.36,19.15,17.05,20.28z M13.06,3.14c1.36-1.78,3.9-1.88,4.29-1.9 C16.5,3.95,14.23,4.8,13.06,3.14z"/>
-              </svg>
-            </div>
           </div>
         </div>
         
-        <h1 className="text-2xl font-medium text-center mb-6">
+        <h1 className="text-center text-xl sm:text-2xl font-medium mb-6">
           {isSignupMode ? "Create your account" : "Sign in with your username"}
         </h1>
         
@@ -101,7 +86,7 @@ export default function AppleStyleLogin() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Username"
-              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
               required
             />
           </div>
@@ -112,7 +97,7 @@ export default function AppleStyleLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
               required
             />
           </div>
@@ -165,12 +150,8 @@ export default function AppleStyleLogin() {
         </div>
       </div>
       
-      <div className="mt-8 text-center text-xs text-gray-500 space-y-1">
-        <div className="flex justify-center space-x-4">
-          <a href="#" className="hover:underline">Privacy Policy</a>
-          <a href="#" className="hover:underline">Terms & Conditions</a>
-        </div>
-        <p>© {new Date().getFullYear()} Fitness App. All rights reserved.</p>
+      <div className="mt-8 text-center text-xs text-gray-500">
+        <p>Copyright © {new Date().getFullYear()} Fitness App</p>
       </div>
     </div>
   );

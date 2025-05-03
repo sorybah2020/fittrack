@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import LoginPage from './LoginPage';
+import AppleStyleLogin from './AppleStyleLogin';
 import App from './App';
 
 export default function Router() {
@@ -51,8 +51,8 @@ export default function Router() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-black">
-        <div className="w-12 h-12 border-4 border-gray-700 border-t-red-500 rounded-full animate-spin" />
+      <div className="flex justify-center items-center h-screen bg-gray-50">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin" />
       </div>
     );
   }
@@ -63,5 +63,5 @@ export default function Router() {
   }
 
   // Otherwise show login page
-  return <LoginPage />;
+  return <AppleStyleLogin />;
 }
