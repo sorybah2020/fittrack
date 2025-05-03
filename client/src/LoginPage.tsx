@@ -103,8 +103,8 @@ export default function LoginPage() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Redirect to home page
-      window.location.href = "/";
+      // Redirect to home page - use replace for better history handling
+      window.location.replace("/");
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
@@ -119,11 +119,12 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="relative w-20 h-20">
-            <div className="absolute inset-0 bg-gradient-to-tr from-pink-500 via-blue-500 to-green-500 rounded-full opacity-20"></div>
-            <svg className="relative z-10 w-full h-full" viewBox="0 0 24 24" fill="none">
-              <path d="M18.06,13.62c-0.02-2.03,0.88-3.97,2.48-5.3c-0.97-1.35-2.47-2.26-4.12-2.53c-1.72-0.18-3.44,1.02-4.33,1.02 c-0.92,0-2.28-1.01-3.77-0.98C5.57,5.89,3.2,7.33,2.06,9.61c-2.48,4.3-0.63,10.63,1.74,14.11c1.19,1.69,2.56,3.55,4.36,3.49 c1.77-0.07,2.42-1.12,4.55-1.12c2.1,0,2.73,1.12,4.57,1.07c1.89-0.03,3.08-1.68,4.21-3.39c0.83-1.19,1.47-2.5,1.91-3.89 C20.65,18.41,18.08,16.37,18.06,13.62z" fill="currentColor" />
-              <path d="M15.84,4.09c1.03-1.24,1.37-2.88,0.93-4.4c-1.49,0.3-2.78,1.16-3.66,2.44c-0.99,1.24-1.31,2.86-0.89,4.36 C13.77,6.19,15.04,5.32,15.84,4.09z" fill="currentColor" />
-            </svg>
+            <div className="absolute inset-0 bg-gradient-to-tr from-orange-400 via-red-500 to-pink-500 rounded-full opacity-30"></div>
+            <div className="relative z-10 w-full h-full flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-12 w-12">
+                <path d="M17.05,20.28c-0.98,0.95-2.05,0.8-3.08,0.35c-1.09-0.46-2.09-0.48-3.24,0c-1.44,0.62-2.2,0.44-3.06-0.35 C2.79,15.5,3.51,7.6,8.56,7.31c1.65,0.07,2.47,0.95,3.56,0.97c1.19-0.15,2.09-1.05,3.6-1.1c1.58,0.06,2.77,0.87,3.55,2.18 c-3.21,1.93-2.62,6.18,0.38,7.53C19.11,18.1,18.36,19.15,17.05,20.28z M13.06,3.14c1.36-1.78,3.9-1.88,4.29-1.9 C16.5,3.95,14.23,4.8,13.06,3.14z"/>
+              </svg>
+            </div>
           </div>
         </div>
         
@@ -152,7 +153,7 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your username" 
-              className="w-full px-4 py-3 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg text-black bg-white font-medium placeholder-gray-500"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg text-gray-900 bg-gray-100 font-medium placeholder-gray-500"
               required
             />
           </div>
@@ -167,7 +168,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-4 py-3 border-2 border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg text-black bg-white font-medium placeholder-gray-500"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg text-gray-900 bg-gray-100 font-medium placeholder-gray-500"
               required
             />
           </div>
