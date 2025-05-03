@@ -103,8 +103,11 @@ export default function LoginPage() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Redirect to home page - use replace for better history handling
-      window.location.replace("/");
+      // Force a complete page reload to ensure proper auth state handling
+      setTimeout(() => {
+        window.location.href = "/";
+        window.location.reload();
+      }, 100);
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
