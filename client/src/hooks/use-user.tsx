@@ -258,7 +258,8 @@ export function UserProvider({
 }
 
 // Hook for using the context
-export function useUser() {
+// Using a named function declaration instead of an arrow function to maintain consistent exports
+export const useUser = function useUser() {
   const context = useContext(UserContext);
   
   if (!context) {
