@@ -144,15 +144,25 @@ export default function Profile() {
       
       {/* Profile */}
       <div className="px-5 py-4 space-y-6">
-        <div className="flex items-center mb-6">
-          <Avatar className="h-20 w-20 mr-4 border-2 border-red-500">
-            <AvatarFallback className="bg-gradient-to-br from-red-500 to-pink-600 text-white text-xl">
-              {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h2 className="text-xl font-semibold text-white">{user?.username}</h2>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <Avatar className="h-20 w-20 mr-4 border-2 border-red-500">
+              <AvatarFallback className="bg-gradient-to-br from-red-500 to-pink-600 text-white text-xl">
+                {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h2 className="text-xl font-semibold text-white">{user?.username}</h2>
+            </div>
           </div>
+          <Button 
+            variant="destructive" 
+            size="sm"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-1" />
+            Log Out
+          </Button>
         </div>
         
         {/* Statistics Card */}
@@ -336,22 +346,10 @@ export default function Profile() {
                   />
                 </div>
                 
-                <div className="space-y-4">
-                  <Button type="submit" className="w-full">
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
-                  </Button>
-                  
-                  <Button 
-                    type="button" 
-                    variant="destructive" 
-                    className="w-full"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Log Out
-                  </Button>
-                </div>
+                <Button type="submit" className="w-full">
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </Button>
               </form>
             </Form>
           </CardContent>
