@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Route, Router, Switch } from "wouter";
 import Dashboard from "@/pages/Dashboard";
 import Workouts from "@/pages/Workouts";
 import WorkoutBuilder from "@/pages/WorkoutBuilder";
@@ -10,25 +11,7 @@ import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 
 function App() {
-  const [page, setPage] = useState('/');
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    function handleUrlChange() {
-      setPage(window.location.pathname);
-    }
-
-    window.addEventListener('popstate', handleUrlChange);
-    
-    return () => {
-      window.removeEventListener('popstate', handleUrlChange);
-    };
-  }, []);
-
-  const navigate = (path: string) => {
-    window.history.pushState({}, '', path);
-    setPage(path);
-  };
 
   const handleLogout = async () => {
     setLoading(true);
@@ -38,7 +21,7 @@ function App() {
         method: "POST",
         credentials: "include"
       });
-      window.location.href = "/login";
+      window.location.href = "/login.html";
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -53,30 +36,21 @@ function App() {
       </div>
     );
   }
-
-  // Simple manual routing
-  switch (page) {
-    case '/':
-      return <Dashboard />;
-    case '/workouts':
-      return <Workouts />;
-    case '/workout-builder':
-      return <WorkoutBuilder />;
-    case '/workout-videos':
-      return <WorkoutVideos />;
-    case '/workout-music':
-      return <WorkoutMusic />;
-    case '/progress':
-      return <Progress />;
-    case '/profile':
-      return <Profile />;
-    default:
-      if (page.startsWith('/workouts/')) {
-        const id = parseInt(page.split('/')[2]);
-        return <Workouts />;
-      }
-      return <NotFound />;
-  }
+  
+  return (
+    <Router>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/workouts" component={Workouts} />
+        <Route path="/workout-builder" component={WorkoutBuilder} />
+        <Route path="/workout-videos" component={WorkoutVideos} />
+        <Route path="/workout-music" component={WorkoutMusic} />
+        <Route path="/progress" component={Progress} />
+        <Route path="/profile" component={Profile} />
+        <Route component={NotFound} />
+      </Switch>
+    </Router>
+  );
 }
 
 export default App;
