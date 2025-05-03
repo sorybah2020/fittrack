@@ -67,7 +67,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
-      <div className="w-full max-w-md bg-white rounded-xl p-8 shadow-lg">
+      <div className="w-full max-w-md bg-white rounded-xl p-8 shadow-xl border border-gray-100">
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="relative w-20 h-20">
@@ -95,7 +95,7 @@ export default function LoginPage() {
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1 ml-1">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-900 mb-1 ml-1">
               Username
             </label>
             <input
@@ -110,7 +110,7 @@ export default function LoginPage() {
           </div>
           
           <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1 ml-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-1 ml-1">
               Password
             </label>
             <input
@@ -119,7 +119,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base text-black bg-white"
               required
             />
           </div>
