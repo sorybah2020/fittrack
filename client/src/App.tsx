@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { queryClient } from "./lib/queryClient";
 import Dashboard from "@/pages/Dashboard";
 import Workouts from "@/pages/Workouts";
+import WorkoutBuilder from "@/pages/WorkoutBuilder";
 import WorkoutVideos from "@/pages/WorkoutVideos";
 import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
@@ -50,6 +51,7 @@ function App() {
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/workouts/:id" component={Workouts} />
           <ProtectedRoute path="/workouts" component={Workouts} />
+          <ProtectedRoute path="/workout-builder" component={WorkoutBuilder} />
           <ProtectedRoute path="/workout-videos" component={WorkoutVideos} />
           <ProtectedRoute path="/workout-music" component={WorkoutMusic} />
           <ProtectedRoute path="/progress" component={Progress} />

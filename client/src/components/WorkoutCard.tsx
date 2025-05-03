@@ -55,10 +55,12 @@ export function WorkoutCard({ workout, onEdit, onDelete }: WorkoutCardProps & { 
             <div className="flex items-center mt-1">
               <p className="text-xs text-gray-400">
                 {formatDuration(workout.duration)}
-                {workout.distance && (
-                  <span className="mx-2 inline-block h-1 w-1 rounded-full bg-gray-500"></span>
+                {workout.distance && typeof workout.distance === 'number' && (
+                  <>
+                    <span className="mx-2 inline-block h-1 w-1 rounded-full bg-gray-500"></span>
+                    {formatDistance(workout.distance)}
+                  </>
                 )}
-                {workout.distance && formatDistance(workout.distance)}
               </p>
               <div className="ml-3 rounded-full px-2 py-0.5 bg-gray-800">
                 <span className="text-xs font-medium text-white">{workout.calories} Cal</span>
