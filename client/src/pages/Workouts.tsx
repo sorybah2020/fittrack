@@ -39,6 +39,19 @@ export default function Workouts() {
     }
   }, [params, navigate]);
   
+  // Handle logout
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast({
+          title: "Logged out",
+          description: "You have been successfully logged out.",
+        });
+        navigate('/auth');
+      }
+    });
+  };
+  
   const handleEditWorkout = (workout: Workout) => {
     setSelectedWorkout(workout);
     setIsEditWorkoutOpen(true);
@@ -166,8 +179,22 @@ export default function Workouts() {
         </div>
       </div>
       
+      {/* Logout Button */}
+      <div className="px-5 py-2 flex justify-end">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-gray-400 hover:text-white" 
+          onClick={handleLogout}
+          disabled={logoutMutation.isPending}
+        >
+          <LogOut className="h-4 w-4 mr-1" />
+          {logoutMutation.isPending ? "Logging out..." : "Logout"}
+        </Button>
+      </div>
+      
       {/* Workout List */}
-      <div className="flex-1 px-5 py-4">
+      <div className="flex-1 px-5 py-2">
         {sortedDates.length > 0 ? (
           sortedDates.map((dateStr) => (
             <div key={dateStr} className="mb-6">

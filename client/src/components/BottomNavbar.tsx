@@ -36,8 +36,7 @@ export function BottomNavbar({ onAddClick }: BottomNavbarProps) {
       label: "Videos",
       icon: <PlayCircle className="h-6 w-6" />,
       path: "/workout-videos"
-    },
-
+    }
   ];
   
   return (
