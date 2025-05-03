@@ -188,7 +188,7 @@
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const username = usernameInput.value;
+      const username = usernameInput.value.trim(); // Trim any leading/trailing spaces
       const password = passwordInput.value;
       const confirmPassword = confirmPasswordInput.value;
 

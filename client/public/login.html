@@ -216,6 +216,13 @@
     const spinner = document.getElementById('spinner');
     const forgotLink = document.getElementById('forgot-link');
     const signupLink = document.getElementById('signup-link');
+    const keepMeSignedIn = document.getElementById('keep-me-signed-in');
+    
+    // Check if we have a stored username from previous login
+    const storedUsername = localStorage.getItem('fitness_username');
+    if (storedUsername) {
+      usernameInput.value = storedUsername;
+    }
 
     // Event Listeners
     continueButton.addEventListener('click', () => {
@@ -238,7 +245,7 @@
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const username = usernameInput.value;
+      const username = usernameInput.value.trim(); // Trim any leading/trailing spaces
       const password = passwordInput.value;
 
       if (!username || !password) return;
@@ -280,6 +287,13 @@
         }
 
         console.log("Login successful!");
+        
+        // Save username to localStorage if keep me signed in is checked
+        if (keepMeSignedIn.checked) {
+          localStorage.setItem('fitness_username', username.trim());
+        } else {
+          localStorage.removeItem('fitness_username');
+        }
         
         // Redirect to dashboard
         window.location.href = "/";
