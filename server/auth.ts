@@ -183,26 +183,9 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/logout", (req, res, next) => {
-    // Store the username for logging
-    const username = req.user ? (req.user as any).username : 'unknown';
-    
     req.logout((err) => {
-      if (err) {
-        console.error(`Logout error for user ${username}:`, err);
-        return next(err);
-      }
-      
-      // Destroy the session completely
-      req.session.destroy((err) => {
-        if (err) {
-          console.error(`Session destruction error for user ${username}:`, err);
-          return next(err);
-        }
-        
-        console.log(`User ${username} logged out successfully`);
-        res.clearCookie('connect.sid');
-        res.status(200).json({ success: true, message: "Logged out successfully" });
-      });
+      if (err) return next(err);
+      res.sendStatus(200);
     });
   });
 

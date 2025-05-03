@@ -12,25 +12,25 @@ import { AddWorkoutModal } from "@/components/AddWorkoutModal";
 import { QuickStartWorkout } from "@/components/QuickStartWorkout";
 import { Activity, Workout, WeeklyActivity, WorkoutType } from "@/lib/fitness-types";
 import { Link } from "wouter";
-import { useUser } from "@/hooks/use-user";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Dashboard() {
-  // Get user from context
-  const { user } = useUser();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false);
   
   const formattedDate = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
   
-  const { data: activity } = useQuery<Activity>({
+  const { user } = useAuth();
+  
+  const { data: activity } = useQuery({
     queryKey: ['/api/activities', formattedDate],
   });
   
-  const { data: workouts = [] } = useQuery<Workout[]>({
+  const { data: workouts = [] } = useQuery({
     queryKey: ['/api/workouts', formattedDate],
   });
   
-  const { data: weeklyActivity = [] } = useQuery<WeeklyActivity[]>({
+  const { data: weeklyActivity = [] } = useQuery({
     queryKey: ['/api/activities/weekly'],
   });
   
@@ -91,15 +91,7 @@ export default function Dashboard() {
           <div className="p-4">
             <h2 className="text-sm font-medium mb-3 text-white/80">Activity Rings</h2>
             {activity && (
-              <ActivitySummary data={{
-                moveProgress: activity.moveProgress || 0,
-                exerciseProgress: activity.exerciseProgress || 0,
-                standProgress: activity.standProgress || 0,
-                caloriesBurned: activity.caloriesBurned || 0,
-                moveGoal: activity.moveGoal || 600,
-                exerciseGoal: activity.exerciseGoal || 30,
-                standGoal: activity.standGoal || 12
-              }} />
+              <ActivitySummary data={activity} />
             )}
           </div>
         </div>

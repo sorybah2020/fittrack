@@ -26,10 +26,7 @@ export function ActivityRing({
   const dimension = sizes[size];
   const radius = dimension / 2 - thickness / 2;
   const circumference = 2 * Math.PI * radius;
-  // Ensure progress is between 0-100 and dashoffset is a valid number
-  const safeProgress = Math.min(Math.max(0, progress || 0), 100);
-  // Convert to string to handle NaN as per React warning
-  const dashoffset = String(circumference - (safeProgress / 100) * circumference);
+  const dashoffset = circumference - (progress / 100) * circumference;
 
   return (
     <svg
@@ -75,9 +72,9 @@ export function ActivityRing({
 }
 
 export function ActivityRings({
-  moveProgress = 0,
-  exerciseProgress = 0,
-  standProgress = 0,
+  moveProgress,
+  exerciseProgress,
+  standProgress,
   children,
   size = "md",
 }: {
@@ -87,10 +84,6 @@ export function ActivityRings({
   children?: React.ReactNode;
   size?: "sm" | "md" | "lg";
 }) {
-  // Ensure progress values are valid numbers
-  const safeMoveProgress = Math.min(Math.max(0, moveProgress || 0), 100);
-  const safeExerciseProgress = Math.min(Math.max(0, exerciseProgress || 0), 100);
-  const safeStandProgress = Math.min(Math.max(0, standProgress || 0), 100);
   // Size classes based on the parent container
   const containerSizes = {
     sm: "w-32 h-32",

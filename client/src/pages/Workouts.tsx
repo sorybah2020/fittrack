@@ -8,7 +8,7 @@ import { EditWorkoutModal } from "@/components/EditWorkoutModal";
 import { Workout, WorkoutType } from "@/lib/fitness-types";
 import { useParams, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@/hooks/use-user";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Select,
   SelectContent,
@@ -21,67 +21,35 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, LogOut } from "lucide-react";
 import { Link } from "wouter";
 
-interface RouteParams {
-  id?: string;
-}
-
-// Component that accepts route params for wouter compatibility
-export default function Workouts({ params }: { params?: RouteParams } = {}) {
+export default function Workouts() {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false);
   const [isEditWorkoutOpen, setIsEditWorkoutOpen] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const params = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const { logout } = useUser();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { logoutMutation } = useAuth();
   
-  // Extract the workoutId from either passed params or route params
-  const routeParams = useParams<RouteParams>();
-  const workoutId = params?.id || routeParams.id;
-  
-  // If we have a workout ID in the URL params or passed as a prop, check it
+  // If we have a workout ID in the URL, redirect to the main workouts page
   useEffect(() => {
-    if (workoutId) {
-      // Handle specific workout ID logic if needed
-      // For now, just redirect to the main workouts page
+    if (params && params.id) {
       navigate('/workouts');
     }
-  }, [workoutId, navigate]);
+  }, [params, navigate]);
   
   // Handle logout
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      // First, try the normal logout
-      const success = await logout();
-      
-      // Regardless of the success status, we'll force a hard reset of the app state
-      toast({
-        title: "Logging out",
-        description: "Please wait while we log you out...",
-      });
-      
-      // Short delay to allow toast to show
-      setTimeout(() => {
-        // Clear any local storage items related to auth if they exist
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user');
-        
-        // Force a hard refresh to completely reset the application state
-        window.location.href = '/';
-      }, 500);
-      
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast({
-        variant: "destructive",
-        title: "Logout failed",
-        description: "There was a problem logging out. Please try again.",
-      });
-      setIsLoggingOut(false);
-    }
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast({
+          title: "Logged out",
+          description: "You have been successfully logged out.",
+        });
+        navigate('/auth');
+      }
+    });
   };
   
   const handleEditWorkout = (workout: Workout) => {
@@ -218,10 +186,10 @@ export default function Workouts({ params }: { params?: RouteParams } = {}) {
           size="sm" 
           className="text-gray-400 hover:text-white" 
           onClick={handleLogout}
-          disabled={isLoggingOut}
+          disabled={logoutMutation.isPending}
         >
           <LogOut className="h-4 w-4 mr-1" />
-          {isLoggingOut ? "Logging out..." : "Logout"}
+          {logoutMutation.isPending ? "Logging out..." : "Logout"}
         </Button>
       </div>
       
