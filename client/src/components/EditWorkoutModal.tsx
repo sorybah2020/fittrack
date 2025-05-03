@@ -211,7 +211,15 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                     <FormItem>
                       <FormLabel>Duration (minutes)</FormLabel>
                       <FormControl>
-                        <Input type="number" min={1} {...field} />
+                        <Input 
+                          type="number" 
+                          min={1} 
+                          value={field.value === null ? '' : field.value}
+                          onChange={(e) => field.onChange(e.target.value === '' ? '' : e.target.value)}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -282,7 +290,11 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                       <Textarea 
                         placeholder="Add some notes about your workout (optional)"
                         className="resize-none" 
-                        {...field}
+                        value={field.value === null ? '' : field.value}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
