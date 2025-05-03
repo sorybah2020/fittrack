@@ -111,9 +111,13 @@ export default function LoginPage() {
     }
   };
 
-  // Handle form submission
+  // Handle form submission - uses the login and register functions defined above
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    if (isSubmitting) {
+      return; // Prevent multiple submissions
+    }
     
     // Set loading state
     setIsSubmitting(true);
@@ -123,18 +127,35 @@ export default function LoginPage() {
       const trimmedUsername = username.trim();
       
       if (!trimmedUsername || !password) {
-        return; // Form validation happens with the required attribute in inputs
+        toast({
+          title: "Validation error",
+          description: "Username and password are required",
+          variant: "destructive"
+        });
+        return;
       }
+      
+      let success = false;
       
       if (isSignupMode) {
         // Registration with default goals
-        await register(trimmedUsername, password, 450, 30, 12);
+        success = await register(trimmedUsername, password, 450, 30, 12);
       } else {
         // Login
-        await login(trimmedUsername, password);
+        success = await login(trimmedUsername, password);
+      }
+      
+      if (success) {
+        // The page will be reloaded by the login/register functions
+        console.log(isSignupMode ? "Registration successful" : "Login successful");
       }
     } catch (error) {
       console.error("Login/register error:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
