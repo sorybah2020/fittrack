@@ -8,6 +8,7 @@ import WorkoutBuilder from "@/pages/WorkoutBuilder";
 import WorkoutVideos from "@/pages/WorkoutVideos";
 import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
+import Profile from "@/pages/Profile";
 
 import LoginPage from "./LoginPage";
 import NotFound from "@/pages/not-found";
@@ -55,6 +56,7 @@ function App() {
           <ProtectedRoute path="/workout-videos" component={WorkoutVideos} />
           <ProtectedRoute path="/workout-music" component={WorkoutMusic} />
           <ProtectedRoute path="/progress" component={Progress} />
+          <ProtectedRoute path="/profile" component={Profile} />
 
           <Route path="*">
             <NotFound />
