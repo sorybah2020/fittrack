@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { useLocation } from "wouter";
+import { Link } from "wouter";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
+import { User } from "@/lib/fitness-types";
 import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
-import { User } from "@/lib/fitness-types";
+
 import {
   Card,
   CardContent,
@@ -30,7 +31,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, Trophy, Award, Target, Save, LogOut } from "lucide-react";
-import { Link } from "wouter";
 
 const profileFormSchema = z.object({
   username: z.string().min(2, "Username must be at least 2 characters"),
@@ -43,21 +43,23 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
+// Define the stats interface to match our API response
+interface UserStats {
+  totalWorkouts?: number;
+  totalCalories?: number;
+  streakDays?: number;
+  badges?: string[];
+}
+
 export default function Profile() {
   const [isAddWorkoutOpen, setIsAddWorkoutOpen] = useState(false);
-  const [, navigate] = useLocation();
   
+  // Fetch user data with proper typing
   const { data: user, isLoading } = useQuery<User>({
     queryKey: ['/api/user'],
   });
   
-  interface UserStats {
-    totalWorkouts?: number;
-    totalCalories?: number;
-    streakDays?: number;
-    badges?: Array<string>;
-  }
-  
+  // Fetch user stats with proper typing
   const { data: stats } = useQuery<UserStats>({
     queryKey: ['/api/users/stats'],
   });
@@ -127,8 +129,8 @@ export default function Profile() {
       {/* Header */}
       <div className="bg-black px-5 pt-12 pb-4 border-b border-gray-800">
         <div className="flex items-center mb-4">
-          <Link href="/">
-            <ChevronLeft className="h-6 w-6 mr-2 text-white" />
+          <Link href="/" className="flex items-center text-white">
+            <ChevronLeft className="h-6 w-6 mr-2" />
           </Link>
           <h1 className="text-2xl font-bold text-white">Profile</h1>
         </div>
@@ -193,7 +195,7 @@ export default function Profile() {
                 Badges
               </h3>
               <div className="flex flex-wrap gap-2">
-                {stats?.badges?.map((badge: string, index: number) => (
+                {stats?.badges?.map((badge, index) => (
                   <Badge key={index} variant="outline" className="bg-gray-800 text-gray-300 border-gray-700">
                     {badge}
                   </Badge>
