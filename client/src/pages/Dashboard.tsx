@@ -61,6 +61,11 @@ export default function Dashboard() {
               {format(new Date(), 'EEEE, MMM d')}
             </p>
             <h1 className="text-3xl font-bold">Summary</h1>
+            {user && (
+              <p className="text-md text-gradient bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Welcome back, {user.username}!
+              </p>
+            )}
           </div>
           <div className="flex items-center space-x-3">
             <button 

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<string>("login");
   
   const loginForm = useForm<LoginFormValues>({
@@ -56,8 +58,14 @@ export default function AuthPage() {
     console.log("Login attempt with:", data.username);
     
     loginMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (user) => {
         console.log("Login successful");
+        // Show welcome toast
+        toast({
+          title: `Welcome back, ${user.username}!`,
+          description: "Your fitness journey continues today.",
+          variant: "default",
+        });
       },
       onError: (error) => {
         console.error("Login error:", error);
@@ -70,6 +78,14 @@ export default function AuthPage() {
   
   function onRegisterSubmit(data: RegisterFormValues) {
     registerMutation.mutate(data, {
+      onSuccess: (user) => {
+        // Show welcome toast for new users
+        toast({
+          title: `Welcome to Fitness Tracker, ${user.username}!`,
+          description: "Your fitness journey begins now.",
+          variant: "default",
+        });
+      },
       onError: (error) => {
         registerForm.setError("root", { 
           message: error.message || "Registration failed. Username may already be taken."
