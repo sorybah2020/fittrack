@@ -1,0 +1,41 @@
+Warning: Received NaN for the &#x60;strokeDashoffset&#x60; attribute. If this is expected, cast the value to a string.
+    at circle
+    at svg
+    at ActivityRing (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/components/ui/activity-ring.tsx:19:3)
+    at div
+    at ActivityRings (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/components/ui/activity-ring.tsx:126:3)
+    at div
+    at div
+    at div
+    at ActivitySummary (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/components/ActivitySummary.tsx:49:35)
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/pages/Dashboard.tsx?t=1746247126078:29:37)
+    at Route (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c4b3c4b8:280:16)
+    at Switch (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c4b3c4b8:336:17)
+    at AppWrapper (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/AppWrapper.tsx?t=1746247143806&v=bjmhTqbcrdou6Hxtz1k6M:32:27)
+    at QueryClientProvider (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=c4b3c4b8:2879:3)
+at circle
+at svg
+at ActivityRing (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/components/ui/activity-ring.tsx:19:3)
+at div
+at ActivityRings (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/components/ui/activity-ring.tsx:126:3)
+at div
+at div
+at div
+at ActivitySummary (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/components/ActivitySummary.tsx:49:35)
+at div
+at div
+at div
+at div
+at Dashboard (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/pages/Dashboard.tsx?t=1746247126078:29:37)
+at Route (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c4b3c4b8:280:16)
+at Switch (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=c4b3c4b8:336:17)
+at AppWrapper (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/AppWrapper.tsx?t=1746247143806&amp;v=bjmhTqbcrdou6Hxtz1k6M:32:27)
+at QueryClientProvider (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=c4b3c4b8:2879:3)
+at t.value (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
