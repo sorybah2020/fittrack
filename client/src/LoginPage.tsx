@@ -103,11 +103,13 @@ export default function LoginPage() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Force a complete page reload to ensure proper auth state handling
+      // Use full reload to ensure proper auth state handling
+      console.log("Login successful - redirecting to dashboard");
+      window.location.href = "/";
+      // Force reload after a short delay to ensure cookies are set
       setTimeout(() => {
-        window.location.href = "/";
-        window.location.reload();
-      }, 100);
+        window.location.reload(true);
+      }, 500);
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
@@ -117,22 +119,49 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
-      <div className="w-full max-w-md bg-white rounded-xl">
-        {/* Logo */}
-        <div className="flex justify-center mb-4">
-          <div className="relative w-16 h-16">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-full opacity-20"></div>
-            <div className="relative z-10 w-full h-full flex items-center justify-center">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-10 w-10 text-blue-600">
-                <path d="M17.05,20.28c-0.98,0.95-2.05,0.8-3.08,0.35c-1.09-0.46-2.09-0.48-3.24,0c-1.44,0.62-2.2,0.44-3.06-0.35 C2.79,15.5,3.51,7.6,8.56,7.31c1.65,0.07,2.47,0.95,3.56,0.97c1.19-0.15,2.09-1.05,3.6-1.1c1.58,0.06,2.77,0.87,3.55,2.18 c-3.21,1.93-2.62,6.18,0.38,7.53C19.11,18.1,18.36,19.15,17.05,20.28z M13.06,3.14c1.36-1.78,3.9-1.88,4.29-1.9 C16.5,3.95,14.23,4.8,13.06,3.14z"/>
-              </svg>
-            </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F5F5F7] p-4">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-lg p-8">
+        {/* Apple Rainbow Circle Logo */}
+        <div className="flex justify-center mb-8">
+          <div className="relative w-24 h-24">
+            <svg viewBox="0 0 200 200" className="absolute w-full h-full">
+              <defs>
+                <linearGradient id="rainbow-1" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FF595E" />
+                  <stop offset="25%" stopColor="#FFCA3A" />
+                  <stop offset="50%" stopColor="#8AC926" />
+                  <stop offset="75%" stopColor="#1982C4" />
+                  <stop offset="100%" stopColor="#6A4C93" />
+                </linearGradient>
+              </defs>
+              {/* Create rainbow circle made of dots */}
+              {Array.from({ length: 60 }).map((_, i) => {
+                const angle = (i * 6) * Math.PI / 180;
+                const radius = 80;
+                const x = 100 + radius * Math.cos(angle);
+                const y = 100 + radius * Math.sin(angle);
+                const size = 3 + Math.random() * 2;
+                return (
+                  <circle 
+                    key={i} 
+                    cx={x} 
+                    cy={y} 
+                    r={size} 
+                    fill={`url(#rainbow-1)`} 
+                    opacity={0.7 + Math.random() * 0.3}
+                  />
+                )
+              })}
+              {/* Apple Logo in Center */}
+              <g transform="translate(100, 100) scale(0.15)">
+                <path fill="#000" d="M213.803 167.03c.442 47.295 41.7 63.032 42.197 63.275-.367 1.097-6.798 23.295-22.277 46.155-13.578 19.711-27.699 39.22-49.755 39.629-21.675.398-28.708-12.73-53.496-12.73-24.812 0-32.585 12.343-53.15 13.13-21.12.788-37.274-21.132-50.978-40.785C8.31 244.442-18.01 170.047 17.44 120.687c17.415-24.356 48.554-39.823 82.2-40.22 25.629-.392 49.84 17.147 65.44 17.147 15.584 0 44.747-21.197 75.715-18.074 12.91.512 49.06 5.194 72.322 39.016-.893.564-43.07 24.76-42.617 73.993M174.24 50.199c13.626-16.595 22.853-39.35 20.366-62.201C172.94-9.571 153.047.822 139.156 17.066c-12.957 15.768-24.269 35.696-20.024 56.628 21.756 1.634 44.01-13.802 55.108-23.495"/>
+              </g>
+            </svg>
           </div>
         </div>
         
-        <h1 className="text-2xl font-semibold text-center mb-2 text-gray-900">
-          {isSignupMode ? "Create Fitness Account" : "Sign in with Username"}
+        <h1 className="text-2xl font-semibold text-center mb-6 text-gray-900">
+          {isSignupMode ? "Create Apple ID" : "Sign in with Apple ID"}
         </h1>
         
         {error && (
@@ -141,77 +170,82 @@ export default function LoginPage() {
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="mt-8">
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-6">
             <div className="relative">
               <input
                 id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username" 
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base text-gray-900 bg-gray-50 font-normal placeholder-gray-500"
+                placeholder="Apple ID" 
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-base text-gray-900 bg-white font-normal placeholder-gray-500"
                 required
               />
               {username && (
                 <button 
                   type="button"
                   onClick={() => setUsername("")}
-                  className="absolute right-4 top-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-3 text-gray-400 hover:text-gray-600 rounded-full bg-gray-100 w-5 h-5 flex items-center justify-center"
                 >
-                  ×
+                  <svg xmlns="http://www.w3.org/2000/svg" height="14" width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
                 </button>
               )}
             </div>
-            
-            <div className="relative">
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base text-gray-900 bg-gray-50 font-normal placeholder-gray-500"
-                required
-              />
-            </div>
-            
-            <button
-              type="submit"
-              disabled={loading || !username || !password}
-              className={`w-full py-3 rounded-lg font-medium text-white text-base mt-2
-                ${(loading || !username || !password) 
-                  ? 'bg-blue-400 cursor-not-allowed' 
-                  : 'bg-blue-600 hover:bg-blue-700'}`}
-            >
-              {loading 
-                ? "Processing..." 
-                : "Continue"}
-            </button>
           </div>
           
-          <div className="mt-6 text-center">
+          {!isSignupMode && (
+            <div className="mb-4">
+              <div className="relative">
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-base text-gray-900 bg-white font-normal placeholder-gray-500"
+                  required
+                />
+              </div>
+            </div>
+          )}
+          
+          <div className="mt-4 mb-4">
+            <label className="inline-flex items-center cursor-pointer">
+              <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-0" />
+              <span className="ml-2 text-sm text-gray-600">Keep me signed in</span>
+            </label>
+          </div>
+          
+          <button
+            type="submit"
+            disabled={loading || !username || (!isSignupMode && !password)}
+            className={`w-full py-3 rounded-lg font-medium text-gray-900 text-base border border-gray-300 bg-white hover:bg-gray-50 ${(loading || !username || (!isSignupMode && !password)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {loading ? "Processing..." : isSignupMode ? "Continue" : "→"}
+          </button>
+          
+          <div className="mt-6 text-center text-sm space-y-2">
             <button
               type="button"
-              onClick={() => setIsSignupMode(!isSignupMode)}
-              className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+              onClick={() => setShowPasswordReset(true)}
+              className="text-blue-600 hover:text-blue-800 font-normal"
             >
-              {isSignupMode 
-                ? "Already have an account? Sign In" 
-                : "Don't have an account? Create one now"}
+              Forgot Apple ID or password?
             </button>
             
-            {!isSignupMode && (
-              <div className="mt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowPasswordReset(true)}
-                  className="text-blue-600 hover:text-blue-800 text-sm"
-                >
-                  Forgot username or password?
-                </button>
-              </div>
-            )}
+            <div>
+              <button
+                type="button"
+                onClick={() => setIsSignupMode(!isSignupMode)}
+                className="text-blue-600 hover:text-blue-800 font-normal"
+              >
+                {isSignupMode ? "Already have an Apple ID? Sign In" : "Create Apple ID"}
+              </button>
+            </div>
           </div>
         </form>
       </div>
