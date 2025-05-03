@@ -8,7 +8,6 @@ import { EditWorkoutModal } from "@/components/EditWorkoutModal";
 import { Workout, WorkoutType } from "@/lib/fitness-types";
 import { useParams, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
 import {
   Select,
   SelectContent,
@@ -18,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, LogOut } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Workouts() {
@@ -30,7 +29,6 @@ export default function Workouts() {
   const params = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const { logoutMutation } = useAuth();
   
   // If we have a workout ID in the URL, redirect to the main workouts page
   useEffect(() => {
@@ -38,19 +36,6 @@ export default function Workouts() {
       navigate('/workouts');
     }
   }, [params, navigate]);
-  
-  // Handle logout
-  const handleLogout = () => {
-    logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        toast({
-          title: "Logged out",
-          description: "You have been successfully logged out.",
-        });
-        navigate('/auth');
-      }
-    });
-  };
   
   const handleEditWorkout = (workout: Workout) => {
     setSelectedWorkout(workout);
@@ -177,20 +162,6 @@ export default function Workouts() {
             </Select>
           </div>
         </div>
-      </div>
-      
-      {/* Logout Button */}
-      <div className="px-5 py-2 flex justify-end">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-gray-400 hover:text-white" 
-          onClick={handleLogout}
-          disabled={logoutMutation.isPending}
-        >
-          <LogOut className="h-4 w-4 mr-1" />
-          {logoutMutation.isPending ? "Logging out..." : "Logout"}
-        </Button>
       </div>
       
       {/* Workout List */}
