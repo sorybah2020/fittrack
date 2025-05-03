@@ -71,6 +71,7 @@ export default function LoginPage() {
 
     try {
       const endpoint = isSignupMode ? "/api/register" : "/api/login";
+      // Show different default values in signup mode
       const bodyData = isSignupMode 
         ? { 
             username: trimmedUsername, 
@@ -80,7 +81,8 @@ export default function LoginPage() {
             dailyStandGoal: 12
           }
         : { username: trimmedUsername, password };
-
+        
+      // Log what we're attempting to do
       console.log(`Attempting ${isSignupMode ? "registration" : "login"} for user:`, trimmedUsername);
       
       const response = await fetch(endpoint, {
@@ -115,9 +117,13 @@ export default function LoginPage() {
       // Simple approach - force page reload to trigger Router authentication check
       console.log("Login successful - reloading page to refresh auth state");
       
-      // Force a complete reload which will cause Router.tsx to re-run its auth check
-      // This is the simplest way to ensure consistent authentication state
-      window.location.reload();
+      // Redirect to homepage after successful login
+      window.location.href = "/";
+      
+      // As a fallback, reload the page if redirection doesn't happen
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
@@ -164,7 +170,7 @@ export default function LoginPage() {
         </div>
         
         <h2 className="text-[21px] font-medium text-center mb-7 text-gray-900">
-          Sign in to Fitness Tracker
+          {isSignupMode ? "Create Account" : "Sign in to Fitness Tracker"}
         </h2>
         
         {error && (
@@ -221,21 +227,19 @@ export default function LoginPage() {
             </div>
           </div>
           
-          {!isSignupMode && (
-            <div className="mb-5">
-              <div className="relative">
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="w-full h-9 pl-3 pr-16 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
-                  required
-                />
-              </div>
+          <div className="mb-5">
+            <div className="relative">
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full h-9 pl-3 pr-16 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 text-[15px] text-gray-900 bg-white font-normal placeholder-gray-500"
+                required
+              />
             </div>
-          )}
+          </div>
           
           <div className="mb-6">
             <label className="inline-flex items-center cursor-pointer">
