@@ -1,0 +1,31 @@
+Warning: Each child in a list should have a unique &quot;key&quot; prop.
+
+Check the render method of `BottomNavbar`. See https://reactjs.org/link/warning-keys for more information.
+    at BottomNavbar (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/components/BottomNavbar.tsx?t=1746291506202:27:32)
+    at div
+    at Dashboard (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/pages/Dashboard.tsx?t=1746291506202:32:43)
+    at Route (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2d48a7a9:280:16)
+    at ProtectedRoute (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/App.tsx?t=1746291506202:35:3)
+    at Switch (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2d48a7a9:336:17)
+    at AuthProvider (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/hooks/use-auth.tsx:171:32)
+    at QueryClientProvider (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=2d48a7a9:2879:3)
+    at App
+    at Router (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/Router.tsx?t=1746291506202&v=oIvTPwZMkrS1B9iOCJllE:24:27)
+    at QueryClientProvider (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=2d48a7a9:2879:3)
+
+Check the render method of &#x60;BottomNavbar&#x60;. See https://reactjs.org/link/warning-keys for more information.
+at BottomNavbar (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/components/BottomNavbar.tsx?t=1746291506202:27:32)
+at div
+at Dashboard (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/pages/Dashboard.tsx?t=1746291506202:32:43)
+at Route (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2d48a7a9:280:16)
+at ProtectedRoute (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/App.tsx?t=1746291506202:35:3)
+at Switch (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=2d48a7a9:336:17)
+at AuthProvider (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/hooks/use-auth.tsx:171:32)
+at QueryClientProvider (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=2d48a7a9:2879:3)
+at App
+at Router (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/src/Router.tsx?t=1746291506202&amp;v=oIvTPwZMkrS1B9iOCJllE:24:27)
+at QueryClientProvider (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=2d48a7a9:2879:3)
+at t.value (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://71e1f684-a055-4bc4-9548-5ab55a29ed3f-00-10royodi1axix.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
