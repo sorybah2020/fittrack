@@ -29,6 +29,7 @@ export interface Workout {
   id: number;
   userId: number;
   workoutTypeId: number;
+  name: string; // Add name property
   date: string;
   duration: number;
   intensity: string;

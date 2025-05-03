@@ -6,13 +6,11 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
-import { User } from "@shared/schema";
+import { useUser } from "@/hooks/use-user";
 
-interface ProfileProps {
-  user: User;
-}
-
-export default function Profile({ user }: ProfileProps) {
+export default function Profile() {
+  // Get user from context
+  const { user, logout } = useUser();
   const { toast } = useToast();
   const [loggingOut, setLoggingOut] = useState(false);
   const [showAddWorkoutModal, setShowAddWorkoutModal] = useState(false);
@@ -20,14 +18,9 @@ export default function Profile({ user }: ProfileProps) {
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      const response = await fetch('/api/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
+      const success = await logout();
       
-      if (response.ok) {
-        window.location.href = '/';
-      } else {
+      if (!success) {
         throw new Error("Logout failed");
       }
     } catch (error) {

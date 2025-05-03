@@ -6,11 +6,15 @@ import { Toaster } from '@/components/ui/toaster'
 import { AppWrapper } from './AppWrapper'
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// Create the application root with the AppWrapper which handles routing and auth
+const App = () => (
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <AppWrapper />
       <Toaster />
     </QueryClientProvider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);
+
+// Render the application
+ReactDOM.createRoot(document.getElementById('root')!).render(<App />)

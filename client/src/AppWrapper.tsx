@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Switch, Route } from 'wouter';
 import { Loader2 } from 'lucide-react';
 import { User } from '@shared/schema';
+import { UserProvider } from './hooks/use-user';
 import LoginPage from './LoginPage';
 import Dashboard from './pages/Dashboard';
 import Workouts from './pages/Workouts';
@@ -55,36 +56,20 @@ export function AppWrapper() {
     return <LoginPage />;
   }
   
-  // If logged in, show the app
+  // If logged in, show the app with UserProvider context
   return (
-    <Switch>
-      <Route path="/">
-        <Dashboard user={user} />
-      </Route>
-      <Route path="/workouts/:id">
-        {params => <Workouts id={params.id} user={user} />}
-      </Route>
-      <Route path="/workouts">
-        <Workouts user={user} />
-      </Route>
-      <Route path="/workout-builder">
-        <WorkoutBuilder user={user} />
-      </Route>
-      <Route path="/workout-videos">
-        <WorkoutVideos user={user} />
-      </Route>
-      <Route path="/workout-music">
-        <WorkoutMusic user={user} />
-      </Route>
-      <Route path="/progress">
-        <Progress user={user} />
-      </Route>
-      <Route path="/profile">
-        <Profile user={user} />
-      </Route>
-      <Route path="*">
-        <NotFound />
-      </Route>
-    </Switch>
+    <UserProvider user={user}>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/workouts/:id" component={Workouts} />
+        <Route path="/workouts" component={Workouts} />
+        <Route path="/workout-builder" component={WorkoutBuilder} />
+        <Route path="/workout-videos" component={WorkoutVideos} />
+        <Route path="/workout-music" component={WorkoutMusic} />
+        <Route path="/progress" component={Progress} />
+        <Route path="/profile" component={Profile} />
+        <Route path="*" component={NotFound} />
+      </Switch>
+    </UserProvider>
   );
 }

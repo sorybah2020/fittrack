@@ -9,82 +9,132 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
+  // Login function
+  const login = async (username: string, password: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+        
+        // Trigger a page refresh to update application state
+        window.location.reload();
+        return true;
+      } else {
+        const errorText = await response.text();
+        
+        toast({
+          title: "Login failed",
+          description: errorText || "Invalid username or password",
+          variant: "destructive"
+        });
+        
+        return false;
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      
+      toast({
+        title: "Login error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+      
+      return false;
+    }
+  };
+
+  // Register function
+  const register = async (
+    username: string, 
+    password: string,
+    moveGoal: number = 450,
+    exerciseGoal: number = 30,
+    standGoal: number = 12
+  ): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          dailyMoveGoal: moveGoal,
+          dailyExerciseGoal: exerciseGoal,
+          dailyStandGoal: standGoal
+        }),
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Registration successful",
+          description: "Your account has been created",
+        });
+        
+        // Trigger a page refresh to update application state
+        window.location.reload();
+        return true;
+      } else {
+        const errorText = await response.text();
+        
+        toast({
+          title: "Registration failed",
+          description: errorText || "Username may already be taken",
+          variant: "destructive"
+        });
+        
+        return false;
+      }
+    } catch (err) {
+      console.error('Registration error:', err);
+      
+      toast({
+        title: "Registration error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+      
+      return false;
+    }
+  };
+
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    // Set loading state
     setIsSubmitting(true);
     
     try {
       // Trim whitespace from username
       const trimmedUsername = username.trim();
       
-      if (!trimmedUsername) {
-        toast({
-          title: "Validation error",
-          description: "Username cannot be empty",
-          variant: "destructive"
-        });
-        return;
+      if (!trimmedUsername || !password) {
+        return; // Form validation happens with the required attribute in inputs
       }
-      
-      let response;
       
       if (isSignupMode) {
-        // Registration
-        response = await fetch('/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: trimmedUsername,
-            password,
-            dailyMoveGoal: 450,
-            dailyExerciseGoal: 30,
-            dailyStandGoal: 12
-          }),
-          credentials: 'include'
-        });
+        // Registration with default goals
+        await register(trimmedUsername, password, 450, 30, 12);
       } else {
         // Login
-        response = await fetch('/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ 
-            username: trimmedUsername, 
-            password 
-          }),
-          credentials: 'include'
-        });
-      }
-      
-      if (response.ok) {
-        toast({
-          title: isSignupMode ? "Registration successful" : "Login successful",
-          description: isSignupMode ? "Your account has been created" : "Welcome back!",
-        });
-        
-        // Redirect to the dashboard after successful login/registration
-        window.location.href = '/';
-      } else {
-        const errorText = await response.text();
-        
-        toast({
-          title: isSignupMode ? "Registration failed" : "Login failed",
-          description: errorText || (isSignupMode ? "Username may already be taken" : "Invalid username or password"),
-          variant: "destructive"
-        });
+        await login(trimmedUsername, password);
       }
     } catch (error) {
-      console.error("Auth error:", error);
-      
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
+      console.error("Login/register error:", error);
     } finally {
       setIsSubmitting(false);
     }

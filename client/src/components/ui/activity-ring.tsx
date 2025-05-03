@@ -28,7 +28,8 @@ export function ActivityRing({
   const circumference = 2 * Math.PI * radius;
   // Ensure progress is between 0-100 and dashoffset is a valid number
   const safeProgress = Math.min(Math.max(0, progress || 0), 100);
-  const dashoffset = circumference - (safeProgress / 100) * circumference;
+  // Convert to string to handle NaN as per React warning
+  const dashoffset = String(circumference - (safeProgress / 100) * circumference);
 
   return (
     <svg
