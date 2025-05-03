@@ -10,7 +10,7 @@ import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
 
-import LoginPage from "./LoginPage";
+import FinalLogin from "./FinalLogin";
 import NotFound from "@/pages/not-found";
 import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "./hooks/use-auth";
@@ -25,6 +25,12 @@ function ProtectedRoute({
   component: () => React.ReactNode;
 }) {
   const { user, isLoading } = useAuth();
+  const [, navigate] = useLocation();
+
+  if (!isLoading && !user) {
+    navigate("/login");
+    return null;
+  }
 
   return (
     <Route path={path}>
@@ -32,8 +38,6 @@ function ProtectedRoute({
         <div className="flex items-center justify-center min-h-screen bg-black">
           <Loader2 className="h-8 w-8 animate-spin text-red-500" />
         </div>
-      ) : !user ? (
-        <LoginPage />
       ) : (
         <Component />
       )}
@@ -46,8 +50,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Switch>
+          <Route path="/login">
+            <FinalLogin />
+          </Route>
           <Route path="/auth">
-            <LoginPage />
+            <FinalLogin />
           </Route>
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/workouts/:id" component={Workouts} />
