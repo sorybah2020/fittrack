@@ -1,7 +1,6 @@
 import { Route, Switch, useLocation } from "wouter";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import { queryClient } from "./lib/queryClient";
 import Dashboard from "@/pages/Dashboard";
 import Workouts from "@/pages/Workouts";
 import WorkoutBuilder from "@/pages/WorkoutBuilder";
@@ -9,10 +8,9 @@ import WorkoutVideos from "@/pages/WorkoutVideos";
 import WorkoutMusic from "@/pages/WorkoutMusic";
 import Progress from "@/pages/Progress";
 import Profile from "@/pages/Profile";
-
+import SignUp from "./SignUp";
 import FinalLogin from "./FinalLogin";
 import NotFound from "@/pages/not-found";
-import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "./hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
@@ -26,52 +24,60 @@ function ProtectedRoute({
 }) {
   const { user, isLoading } = useAuth();
   const [, navigate] = useLocation();
+  
+  // Use useEffect to handle navigation after render
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate("/login");
+    }
+  }, [isLoading, user, navigate]);
 
-  if (!isLoading && !user) {
-    navigate("/login");
-    return null;
-  }
-
-  return (
-    <Route path={path}>
-      {isLoading ? (
+  // If still loading or redirecting, show loader
+  if (isLoading || (!user && !isLoading)) {
+    return (
+      <Route path={path}>
         <div className="flex items-center justify-center min-h-screen bg-black">
           <Loader2 className="h-8 w-8 animate-spin text-red-500" />
         </div>
-      ) : (
-        <Component />
-      )}
+      </Route>
+    );
+  }
+
+  // If we have a user and are not loading, show the component
+  return (
+    <Route path={path}>
+      <Component />
     </Route>
   );
 }
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Switch>
-          <Route path="/login">
-            <FinalLogin />
-          </Route>
-          <Route path="/auth">
-            <FinalLogin />
-          </Route>
-          <ProtectedRoute path="/" component={Dashboard} />
-          <ProtectedRoute path="/workouts/:id" component={Workouts} />
-          <ProtectedRoute path="/workouts" component={Workouts} />
-          <ProtectedRoute path="/workout-builder" component={WorkoutBuilder} />
-          <ProtectedRoute path="/workout-videos" component={WorkoutVideos} />
-          <ProtectedRoute path="/workout-music" component={WorkoutMusic} />
-          <ProtectedRoute path="/progress" component={Progress} />
-          <ProtectedRoute path="/profile" component={Profile} />
+    <>
+      <Switch>
+        <Route path="/signup">
+          <SignUp />
+        </Route>
+        
+        <Route path="/login">
+          <FinalLogin />
+        </Route>
+        
+        <ProtectedRoute path="/" component={Dashboard} />
+        <ProtectedRoute path="/workouts/:id" component={Workouts} />
+        <ProtectedRoute path="/workouts" component={Workouts} />
+        <ProtectedRoute path="/workout-builder" component={WorkoutBuilder} />
+        <ProtectedRoute path="/workout-videos" component={WorkoutVideos} />
+        <ProtectedRoute path="/workout-music" component={WorkoutMusic} />
+        <ProtectedRoute path="/progress" component={Progress} />
+        <ProtectedRoute path="/profile" component={Profile} />
 
-          <Route path="*">
-            <NotFound />
-          </Route>
-        </Switch>
-        <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+        <Route path="*">
+          <NotFound />
+        </Route>
+      </Switch>
+      <Toaster />
+    </>
   );
 }
 

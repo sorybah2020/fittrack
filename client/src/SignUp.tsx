@@ -1,11 +1,25 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import { useLocation } from 'wouter';
 
 export default function SignUp() {
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
+  
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const { registerMutation } = useAuth();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -22,44 +36,19 @@ export default function SignUp() {
     try {
       console.log("Attempting registration for user:", username);
       
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          username, 
-          password,
-          dailyMoveGoal: 450,
-          dailyExerciseGoal: 30,
-          dailyStandGoal: 12
-        }),
-        credentials: "include",
+      // Use registerMutation from useAuth hook
+      await registerMutation.mutateAsync({ 
+        username, 
+        password,
+        dailyMoveGoal: 450,
+        dailyExerciseGoal: 30,
+        dailyStandGoal: 12
       });
-
-      console.log("Registration response status:", response.status);
       
-      // Get response as text first
-      const responseText = await response.text();
-      console.log("Registration response body:", responseText);
-      
-      // Then parse as JSON if possible
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        console.error("Could not parse response as JSON:", e);
-      }
-      
-      if (!response.ok) {
-        throw new Error((data && data.message) || `Registration failed with status ${response.status}`);
-      }
-
       console.log("Registration successful!");
       
-      // Force a full reload to ensure proper login after registration
-      window.location.href = "/";
-      window.location.reload();
+      // Use wouter navigation instead of direct window.location
+      navigate('/');
     } catch (err) {
       console.error("Registration error:", err);
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -69,7 +58,7 @@ export default function SignUp() {
   };
 
   const goToLogin = () => {
-    window.location.href = "/";
+    navigate("/login");
   };
 
   return (

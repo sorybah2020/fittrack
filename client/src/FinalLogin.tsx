@@ -1,12 +1,25 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import { useLocation } from 'wouter';
 
 export default function FinalLogin() {
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
+  
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [keepMeSignedIn, setKeepMeSignedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const { loginMutation } = useAuth();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -18,38 +31,16 @@ export default function FinalLogin() {
     try {
       console.log("Attempting login for user:", username);
       
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-        credentials: "include",
+      // Use loginMutation from useAuth hook
+      await loginMutation.mutateAsync({ 
+        username, 
+        password 
       });
-
-      console.log("Login response status:", response.status);
       
-      // Get response as text first
-      const responseText = await response.text();
-      console.log("Login response body:", responseText);
-      
-      // Then parse as JSON if possible
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        console.error("Could not parse response as JSON:", e);
-      }
-      
-      if (!response.ok) {
-        throw new Error((data && data.message) || `Login failed with status ${response.status}`);
-      }
-
       console.log("Login successful!");
       
-      // Force a full reload to ensure proper login
-      window.location.href = "/";
-      window.location.reload();
+      // Use wouter navigation instead of direct window.location
+      navigate('/');
     } catch (err) {
       console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "Login failed");
@@ -59,7 +50,7 @@ export default function FinalLogin() {
   };
 
   const goToSignUp = () => {
-    window.location.href = "/signup";
+    navigate("/signup");
   };
 
   return (
