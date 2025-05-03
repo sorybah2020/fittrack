@@ -176,7 +176,7 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                     <FormLabel>Workout Type</FormLabel>
                     <Select 
                       onValueChange={(value) => field.onChange(parseInt(value))}
-                      value={field.value.toString()}
+                      value={(field.value || 1).toString()}
                     >
                       <FormControl>
                         <SelectTrigger>

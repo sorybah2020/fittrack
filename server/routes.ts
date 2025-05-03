@@ -185,7 +185,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Forbidden" });
       }
       
-      const updatedWorkout = await storage.updateWorkout(id, req.body);
+      const workoutData = { ...req.body };
+      
+      // If date is a string, convert it to a Date object
+      if (typeof workoutData.date === 'string') {
+        workoutData.date = new Date(workoutData.date);
+      }
+      
+      const updatedWorkout = await storage.updateWorkout(id, workoutData);
       res.json(updatedWorkout);
     } catch (error) {
       console.error('Error updating workout:', error);
