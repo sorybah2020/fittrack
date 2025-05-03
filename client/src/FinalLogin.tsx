@@ -49,6 +49,7 @@ export default function FinalLogin() {
       
       // Force a full reload to ensure proper login
       window.location.href = "/";
+      window.location.reload();
     } catch (err) {
       console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "Login failed");

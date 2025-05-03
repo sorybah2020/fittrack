@@ -268,7 +268,14 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Add Workout Modal - Moved to App level */}
+      {/* Bottom Navigation */}
+      <BottomNavbar onAddClick={() => setIsAddWorkoutOpen(true)} />
+      
+      {/* Add Workout Modal */}
+      <AddWorkoutModal 
+        isOpen={isAddWorkoutOpen}
+        onClose={() => setIsAddWorkoutOpen(false)}
+      />
     </div>
   );
 }

@@ -1,41 +1,15 @@
 import { useEffect, useState } from 'react';
-import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { queryClient } from "./lib/queryClient";
 import FinalLogin from './FinalLogin';
 import SignUp from './SignUp';
 import App from './App';
-import { AuthProvider } from "./hooks/use-auth";
 
 export default function Router() {
   const [path, setPath] = useState(window.location.pathname);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Check authentication status - but only once when the app starts
+  // Check authentication status
   useEffect(() => {
-    // Use URL check to avoid excessive API calls
-    // If we're on /login or /signup pages, we don't need to check auth
-    const currentPath = window.location.pathname;
-    if (currentPath === '/login' || currentPath === '/login.html' || 
-        currentPath === '/signup' || currentPath === '/signup.html') {
-      setIsAuthenticated(false);
-      setLoading(false);
-      return;
-    }
-    
-    // Check for the keepMeSignedIn flag in localStorage first
-    const keepMeSignedIn = localStorage.getItem('keepMeSignedIn') === 'true';
-    const storedUser = localStorage.getItem('user');
-    
-    if (keepMeSignedIn && storedUser) {
-      console.log("Using saved authentication");
-      setIsAuthenticated(true);
-      setLoading(false);
-      return;
-    }
-    
-    // Only check auth if we're not on login/signup pages and don't have saved auth
     async function checkAuth() {
       try {
         const response = await fetch('/api/user', {
@@ -44,15 +18,11 @@ export default function Router() {
         if (response.ok) {
           setIsAuthenticated(true);
         } else {
-          // If not authenticated, redirect to login page
-          window.location.href = '/login.html';
-          return;
+          setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Auth check error:', error);
         setIsAuthenticated(false);
-        window.location.href = '/login.html';
-        return;
       } finally {
         setLoading(false);
       }
@@ -87,13 +57,13 @@ export default function Router() {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: '#000000'
+        backgroundColor: '#f5f5f7'
       }}>
         <div style={{
           width: '40px',
           height: '40px',
-          border: '3px solid #333333',
-          borderTop: '3px solid #FF2D55',
+          border: '3px solid #f3f3f3',
+          borderTop: '3px solid #0071e3',
           borderRadius: '50%',
           animation: 'spin 1s linear infinite'
         }} />
@@ -109,24 +79,16 @@ export default function Router() {
     );
   }
 
-  // QueryClientProvider
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {isAuthenticated ? (
-          <App />
-        ) : (
-          // Routes
-          <>
-            {path === '/signup' ? (
-              <SignUp />
-            ) : (
-              <FinalLogin />
-            )}
-          </>
-        )}
-        <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
-  );
+  // If authenticated, show the app
+  if (isAuthenticated) {
+    return <App />;
+  }
+
+  // Routes
+  switch (path) {
+    case '/signup':
+      return <SignUp />;
+    default:
+      return <FinalLogin />;
+  }
 }

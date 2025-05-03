@@ -112,18 +112,10 @@ export default function Profile() {
     updateProfileMutation.mutate(data);
   }
   
+  const { logoutMutation } = useAuth();
+  
   function handleLogout() {
-    // Post to logout API and redirect to login page
-    fetch('/api/logout', {
-      method: 'POST',
-      credentials: 'include'
-    }).then(() => {
-      navigate('/login');
-    }).catch(error => {
-      console.error('Logout error:', error);
-      // Redirect anyway
-      navigate('/login');
-    });
+    logoutMutation.mutate();
   }
   
   if (isLoading) {
@@ -144,25 +136,26 @@ export default function Profile() {
       
       {/* Profile */}
       <div className="px-5 py-4 space-y-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            <Avatar className="h-20 w-20 mr-4 border-2 border-red-500">
-              <AvatarFallback className="bg-gradient-to-br from-red-500 to-pink-600 text-white text-xl">
-                {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-xl font-semibold text-white">{user?.username}</h2>
+        <div className="flex items-center mb-6">
+          <Avatar className="h-20 w-20 mr-4 border-2 border-red-500">
+            <AvatarFallback className="bg-gradient-to-br from-red-500 to-pink-600 text-white text-xl">
+              {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h2 className="text-xl font-semibold text-white">{user?.username}</h2>
+            <div className="flex items-center mt-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-red-500 hover:text-red-400 hover:bg-red-500/10 px-0" 
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                Logout
+              </Button>
             </div>
           </div>
-          <Button 
-            variant="destructive" 
-            size="sm"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4 mr-1" />
-            Log Out
-          </Button>
         </div>
         
         {/* Statistics Card */}

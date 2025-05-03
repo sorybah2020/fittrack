@@ -59,6 +59,7 @@ export default function SignUp() {
       
       // Force a full reload to ensure proper login after registration
       window.location.href = "/";
+      window.location.reload();
     } catch (err) {
       console.error("Registration error:", err);
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -68,7 +69,7 @@ export default function SignUp() {
   };
 
   const goToLogin = () => {
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (

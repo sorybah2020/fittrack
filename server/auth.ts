@@ -54,17 +54,14 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
-        // Trim the username to handle any whitespace issues
-        const trimmedUsername = username.trim();
-        
         // Log authentication attempt (for debugging)
-        console.log(`Authentication attempt for user: ${trimmedUsername}`);
+        console.log(`Authentication attempt for user: ${username}`);
         
-        const res = await pool.query('SELECT * FROM users WHERE username = $1', [trimmedUsername]);
+        const res = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
         const user = res.rows[0];
         
         if (!user) {
-          console.log(`User not found: ${trimmedUsername}`);
+          console.log(`User not found: ${username}`);
           return done(null, false);
         }
         
