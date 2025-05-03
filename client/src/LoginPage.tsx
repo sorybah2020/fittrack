@@ -1,13 +1,13 @@
 import { FormEvent, useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "./hooks/use-auth";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [keepSignedIn, setKeepSignedIn] = useState(true);
   const [isSignupMode, setIsSignupMode] = useState(false);
   const [_, setLocation] = useLocation();
   
@@ -48,134 +48,196 @@ export default function LoginPage() {
     }
   };
 
+  const clearUsername = () => {
+    setUsername("");
+  };
+
   return (
-    <div className="flex min-h-screen bg-black">
-      {/* Left Section - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 lg:p-12">
-        <div className="max-w-md mx-auto w-full">
-          {/* Logo */}
-          <div className="flex items-center justify-center h-16 w-16 rounded-full bg-white/10 backdrop-blur-sm mb-8 mx-auto">
-            <svg className="w-10 h-10 text-red-500" viewBox="0 0 24 24" fill="none">
-              <path d="M18.06,13.62c-0.02-2.03,0.88-3.97,2.48-5.3c-0.97-1.35-2.47-2.26-4.12-2.53c-1.72-0.18-3.44,1.02-4.33,1.02 c-0.92,0-2.28-1.01-3.77-0.98C5.57,5.89,3.2,7.33,2.06,9.61c-2.48,4.3-0.63,10.63,1.74,14.11c1.19,1.69,2.56,3.55,4.36,3.49 c1.77-0.07,2.42-1.12,4.55-1.12c2.1,0,2.73,1.12,4.57,1.07c1.89-0.03,3.08-1.68,4.21-3.39c0.83-1.19,1.47-2.5,1.91-3.89 C20.65,18.41,18.08,16.37,18.06,13.62z" fill="currentColor" />
-              <path d="M15.84,4.09c1.03-1.24,1.37-2.88,0.93-4.4c-1.49,0.3-2.78,1.16-3.66,2.44c-0.99,1.24-1.31,2.86-0.89,4.36 C13.77,6.19,15.04,5.32,15.84,4.09z" fill="currentColor" />
+    <div className="flex min-h-screen bg-black items-center justify-center">
+      <div className="max-w-md w-full bg-black rounded-2xl p-8 mx-4">
+        {/* Logo with Spiral Dots */}
+        <div className="flex justify-center mb-8">
+          <div className="relative">
+            <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
+              {/* Generate dots in a spiral pattern */}
+              {Array.from({ length: 40 }).map((_, i) => {
+                const angle = i * 0.5;
+                const distance = 2 + i * 0.6;
+                const x = 40 + distance * Math.cos(angle);
+                const y = 40 + distance * Math.sin(angle);
+                const size = 1.5 - (i * 0.03);
+                
+                // Create gradient colors from blue to purple to pink
+                const hue = 240 + (i * 3);
+                return (
+                  <circle 
+                    key={i} 
+                    cx={x} 
+                    cy={y} 
+                    r={size} 
+                    fill={`hsl(${hue}, 70%, 70%)`} 
+                  />
+                );
+              })}
+              
+              {/* Apple logo in center */}
+              <g transform="translate(36, 36) scale(0.5)">
+                <path fill="#ffffff" d="M12.7,0.3c-0.9,0.9-2.2,1.4-3.5,1.4c-0.1-1.3,0.4-2.5,1.1-3.4C11.2-2.5,12.5-3.1,13.7-3.2C13.8-1.9,13.3-0.7,12.7,0.3z" />
+                <path fill="#ffffff" d="M13.7,2.4c-1.9-0.1-3.6,1.1-4.5,1.1C8.2,3.5,6.9,2.5,5.3,2.5c-2.4,0.1-4.7,1.4-5.9,3.6C-3.2,10.8-0.9,16.7,1.5,19.9
+                  c1.2,1.6,2.5,3.5,4.3,3.4c1.7-0.1,2.3-1.1,4.4-1.1c2,0,2.6,1.1,4.4,1.1c1.8,0,3-1.7,4.1-3.4c0.7-1,1.2-2.1,1.6-3.2
+                  c-3.9-1.5-3.7-7.1,0.2-8.3c-1.2-1.5-2.8-2.4-4.5-2.5C15.1,6,14.5,2.5,13.7,2.4z"/>
+              </g>
             </svg>
           </div>
-          
-          <h1 className="text-3xl font-bold text-center mb-2 text-white">
-            {isSignupMode 
-              ? "Create Your Account" 
-              : "Sign in with Your ID"}
-          </h1>
-          
-          <p className="text-lg text-gray-400 text-center mb-8">
-            {isSignupMode 
-              ? "Start tracking your fitness journey" 
-              : "Continue to Fitness App"}
-          </p>
-          
-          {error && (
-            <div className="bg-red-950/50 border border-red-800 text-red-400 p-4 rounded-xl text-sm mb-6 text-center">
-              {error}
-            </div>
-          )}
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+        </div>
+        
+        <h1 className="text-2xl font-medium text-center text-white mb-6">
+          {isSignupMode 
+            ? "Create Your Account" 
+            : "Sign in with Apple ID"}
+        </h1>
+        
+        {error && (
+          <div className="bg-red-950/50 border border-red-800 text-red-400 p-3 rounded-lg text-sm mb-6 text-center">
+            {error}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative">
+            <div className="relative">
               <input
                 id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username" 
-                className="w-full px-5 py-4 bg-gray-900/50 border border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-lg text-white"
+                placeholder="Apple ID" 
+                className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-white text-sm"
                 required
                 autoComplete="username"
               />
+              {username && (
+                <button
+                  type="button"
+                  onClick={clearUsername}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
-            
-            <div>
+          </div>
+          
+          {!isSignupMode && (
+            <div className="mt-2">
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full px-5 py-4 bg-gray-900/50 border border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-lg text-white"
+                className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-white text-sm"
                 required
-                autoComplete={isSignupMode ? "new-password" : "current-password"}
+                autoComplete="current-password"
               />
             </div>
-            
-            <button
-              type="submit"
-              disabled={loginMutation.isPending || registerMutation.isPending || !username || !password}
-              className={`w-full py-4 rounded-xl font-semibold text-white text-lg flex items-center justify-center space-x-2
-                ${(loginMutation.isPending || registerMutation.isPending || !username || !password)
-                  ? 'bg-gray-800 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 shadow-lg'}`}
-            >
-              {(loginMutation.isPending || registerMutation.isPending) ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Processing...</span>
-                </>
-              ) : (
-                <>
-                  <span>{isSignupMode ? "Create Account" : "Continue"}</span>
-                  <ArrowRight className="h-5 w-5" />
-                </>
-              )}
-            </button>
-          </form>
+          )}
           
-          <div className="mt-8 text-center">
+          <div className="flex items-center mt-4">
+            <input 
+              type="checkbox" 
+              id="keepSignedIn" 
+              checked={keepSignedIn}
+              onChange={() => setKeepSignedIn(!keepSignedIn)}
+              className="h-3 w-3 rounded border-gray-600 text-blue-500 focus:ring-0 focus:ring-offset-0"
+            />
+            <label htmlFor="keepSignedIn" className="ml-2 text-xs text-gray-400">
+              Keep me signed in
+            </label>
+          </div>
+          
+          {!isSignupMode && (
+            <div className="mt-8">
+              <button
+                type="submit"
+                disabled={loginMutation.isPending || !username || !password}
+                className={`w-full py-2 rounded-md font-medium text-white text-sm flex items-center justify-center
+                  ${(loginMutation.isPending || !username || !password)
+                    ? 'bg-gray-800 cursor-not-allowed' 
+                    : 'bg-blue-500 hover:bg-blue-600'}`}
+              >
+                {loginMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <span>Continue</span>
+                )}
+              </button>
+            </div>
+          )}
+          
+          {isSignupMode && (
+            <>
+              <div className="mt-4">
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-white text-sm"
+                  required
+                  autoComplete="new-password"
+                />
+              </div>
+              
+              <div className="mt-8">
+                <button
+                  type="submit"
+                  disabled={registerMutation.isPending || !username || !password}
+                  className={`w-full py-2 rounded-md font-medium text-white text-sm flex items-center justify-center
+                    ${(registerMutation.isPending || !username || !password)
+                      ? 'bg-gray-800 cursor-not-allowed' 
+                      : 'bg-blue-500 hover:bg-blue-600'}`}
+                >
+                  {registerMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      <span>Creating account...</span>
+                    </>
+                  ) : (
+                    <span>Create Account</span>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
+        </form>
+        
+        <div className="mt-6 pt-6 border-t border-gray-800 text-center">
+          <button
+            type="button"
+            className="text-blue-500 text-xs hover:underline"
+          >
+            {isSignupMode 
+              ? "Forgot Apple ID or password?" 
+              : "Forgot Apple ID or password?"}
+          </button>
+          
+          <div className="mt-2">
             <button
               type="button"
               onClick={() => setIsSignupMode(!isSignupMode)}
-              className="text-red-500 hover:text-red-400 font-medium text-base"
+              className="text-blue-500 text-xs hover:underline"
             >
               {isSignupMode 
-                ? "Already have an account? Sign In" 
-                : "Don't have an account? Sign Up"}
+                ? "Already have an Apple ID? Sign in" 
+                : "Create your Apple ID"}
             </button>
           </div>
         </div>
-      </div>
-      
-      {/* Right Section - Hero Image (visible only on larger screens) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-12 z-10">
-          <div className="w-full max-w-lg">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-              Track Your Fitness <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-pink-500">Journey</span>
-            </h2>
-            <p className="text-gray-300 text-xl mb-8">
-              Your all-in-one fitness companion. Monitor workouts, track progress, and achieve your fitness goals.
-            </p>
-            
-            <div className="grid grid-cols-2 gap-6 mb-6">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5">
-                <div className="text-red-500 font-bold text-4xl">450+</div>
-                <div className="text-gray-400">Exercise Minutes</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5">
-                <div className="text-red-500 font-bold text-4xl">1,200</div>
-                <div className="text-gray-400">Calories Burned</div>
-              </div>
-            </div>
-            
-            <div className="flex space-x-4">
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-              <div className="w-2 h-2 bg-white/30 rounded-full"></div>
-              <div className="w-2 h-2 bg-white/30 rounded-full"></div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Abstract rings graphics */}
-        <div className="absolute -bottom-20 -right-20 w-96 h-96 border-4 border-red-500/20 rounded-full"></div>
-        <div className="absolute top-40 -right-20 w-80 h-80 border-4 border-pink-600/10 rounded-full"></div>
-        <div className="absolute -top-20 left-20 w-72 h-72 border-4 border-red-500/20 rounded-full"></div>
       </div>
     </div>
   );
