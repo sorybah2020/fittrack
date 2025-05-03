@@ -103,13 +103,19 @@ export default function LoginPage() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Use full reload to ensure proper auth state handling
+      // Simple redirection approach, don't need complex reload
       console.log("Login successful - redirecting to dashboard");
-      window.location.href = "/";
-      // Force reload after a short delay to ensure cookies are set
+      
+      // Replace current location with root path for fitness dashboard
+      window.location.replace("/");
+      
+      // For backup purposes only, try again after a delay if still on login page
       setTimeout(() => {
-        window.location.reload();
-      }, 500);
+        if (window.location.pathname.includes('login')) {
+          console.log("Backup redirect initiated");
+          window.location.href = "/";
+        }
+      }, 1000);
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
