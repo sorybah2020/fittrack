@@ -55,7 +55,7 @@ export default function Profile() {
     totalWorkouts?: number;
     totalCalories?: number;
     streakDays?: number;
-    badges?: Array<{ id: number; name: string }>;
+    badges?: Array<string>;
   }
   
   const { data: stats } = useQuery<UserStats>({
@@ -193,9 +193,9 @@ export default function Profile() {
                 Badges
               </h3>
               <div className="flex flex-wrap gap-2">
-                {stats?.badges?.map((badge: any) => (
-                  <Badge key={badge.id} variant="outline" className="bg-gray-800 text-gray-300 border-gray-700">
-                    {badge.name}
+                {stats?.badges?.map((badge: string, index: number) => (
+                  <Badge key={index} variant="outline" className="bg-gray-800 text-gray-300 border-gray-700">
+                    {badge}
                   </Badge>
                 ))}
                 

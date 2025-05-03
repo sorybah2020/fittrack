@@ -5,6 +5,7 @@ import {
   Heart, 
   Plus,
   PlayCircle,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,11 @@ export function BottomNavbar({ onAddClick }: BottomNavbarProps) {
       label: "Videos",
       icon: <PlayCircle className="h-6 w-6" />,
       path: "/workout-videos"
+    },
+    {
+      label: "Profile",
+      icon: <User className="h-6 w-6" />,
+      path: "/profile"
     }
   ];
   
