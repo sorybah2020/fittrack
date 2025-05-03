@@ -103,19 +103,12 @@ export default function LoginPage() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Simple redirection approach, don't need complex reload
-      console.log("Login successful - redirecting to dashboard");
+      // Simple approach - force page reload to trigger Router authentication check
+      console.log("Login successful - reloading page to refresh auth state");
       
-      // Replace current location with root path for fitness dashboard
-      window.location.replace("/");
-      
-      // For backup purposes only, try again after a delay if still on login page
-      setTimeout(() => {
-        if (window.location.pathname.includes('login')) {
-          console.log("Backup redirect initiated");
-          window.location.href = "/";
-        }
-      }, 1000);
+      // Force a complete reload which will cause Router.tsx to re-run its auth check
+      // This is the simplest way to ensure consistent authentication state
+      window.location.reload();
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);

@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react';
-import FinalLogin from './FinalLogin';
-import SignUp from './SignUp';
+import LoginPage from './LoginPage';
 import App from './App';
 
 export default function Router() {
-  const [path, setPath] = useState(window.location.pathname);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Check authentication status
+  // Check authentication status whenever page loads
   useEffect(() => {
     async function checkAuth() {
       try {
+        console.log("Checking authentication status...");
         const response = await fetch('/api/user', {
           credentials: 'include'
         });
         if (response.ok) {
+          console.log("User is authenticated");
           setIsAuthenticated(true);
         } else {
+          console.log("User is not authenticated");
           setIsAuthenticated(false);
         }
       } catch (error) {
@@ -29,26 +30,20 @@ export default function Router() {
     }
     
     checkAuth();
-  }, []);
 
-  // Listen for path changes
-  useEffect(() => {
-    const handlePopState = () => {
-      setPath(window.location.pathname);
+    // Listen for page visibilitychange to recheck auth when user returns to the page
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkAuth();
+      }
     };
 
-    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
-
-  // Custom navigate function
-  const navigate = (to: string) => {
-    window.history.pushState({}, '', to);
-    setPath(to);
-  };
 
   if (loading) {
     return (
@@ -79,16 +74,6 @@ export default function Router() {
     );
   }
 
-  // If authenticated, show the app
-  if (isAuthenticated) {
-    return <App />;
-  }
-
-  // Routes
-  switch (path) {
-    case '/signup':
-      return <SignUp />;
-    default:
-      return <FinalLogin />;
-  }
+  // If authenticated, show the app, otherwise show the login page
+  return isAuthenticated ? <App /> : <LoginPage />;
 }
