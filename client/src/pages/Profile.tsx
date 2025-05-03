@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../SimpleAuth";
+import { useUser } from "../UserContext";
 import { Loader2, LogOut, User, Settings, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { BottomNavbar } from "@/components/BottomNavbar";
 import { AddWorkoutModal } from "@/components/AddWorkoutModal";
 
 export default function Profile() {
-  const { user, logout } = useAuth();
+  const user = useUser();
   const { toast } = useToast();
   const [loggingOut, setLoggingOut] = useState(false);
   const [showAddWorkoutModal, setShowAddWorkoutModal] = useState(false);
@@ -17,8 +17,12 @@ export default function Profile() {
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      const success = await logout();
-      if (success) {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
         window.location.href = '/';
       } else {
         throw new Error("Logout failed");

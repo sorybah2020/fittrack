@@ -1,60 +1,67 @@
+export interface Activity {
+  id: number;
+  userId: number;
+  date: string;
+  caloriesBurned: number;
+  moveProgress: number;
+  exerciseProgress: number;
+  standProgress: number;
+  moveGoal: number;
+  exerciseGoal: number;
+  standGoal: number;
+  stepCount: number;
+  stepDistance: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ActivitySummaryType {
+  moveProgress: number;
+  exerciseProgress: number;
+  standProgress: number;
+  caloriesBurned: number;
+  moveGoal: number;
+  exerciseGoal: number;
+  standGoal: number;
+}
+
+export interface Workout {
+  id: number;
+  userId: number;
+  workoutTypeId: number;
+  date: string;
+  duration: number;
+  intensity: string;
+  calories: number;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  workoutType?: WorkoutType;
+}
+
 export interface WorkoutType {
   id: number;
   name: string;
   icon: string;
   color: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface Activity {
-  id: number;
+export interface WeeklyActivity {
   date: string;
-  calories: number;
-  moveMinutes: number;
-  moveTarget: number;
-  exerciseMinutes: number;
-  exerciseTarget: number;
-  standHours: number;
-  standTarget: number;
-}
-
-export interface Workout {
-  id: number;
-  workoutTypeId: number;
-  name: string;
-  date: string;
-  duration: number; // in minutes
-  distance?: number; // in miles
-  calories: number;
-  notes?: string;
-  intensity: 'low' | 'medium' | 'high';
-}
-
-export interface User {
-  id: number;
-  username: string;
-  weight?: number; // in kg
-  height?: number; // in cm
-  dailyMoveGoal: number; // in minutes
-  dailyExerciseGoal: number; // in minutes
-  dailyStandGoal: number; // in hours
-}
-
-export interface ActivitySummary {
   moveProgress: number;
   exerciseProgress: number;
   standProgress: number;
   caloriesBurned: number;
-  moveMinutes: number;
-  moveTarget: number;
-  exerciseMinutes: number;
-  exerciseTarget: number;
-  standHours: number;
-  standTarget: number;
 }
 
-export interface WeeklyActivity {
-  day: string;
-  date: string;
-  caloriesBurned: number;
-  percentage: number;
+export interface Badge {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  criteria: string;
+  createdAt: string;
+  updatedAt: string;
 }

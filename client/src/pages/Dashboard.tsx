@@ -12,7 +12,7 @@ import { AddWorkoutModal } from "@/components/AddWorkoutModal";
 import { QuickStartWorkout } from "@/components/QuickStartWorkout";
 import { Activity, Workout, WeeklyActivity, WorkoutType } from "@/lib/fitness-types";
 import { Link } from "wouter";
-import { useAuth } from "../SimpleAuth";
+import { useUser } from "../UserContext";
 
 export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -20,7 +20,7 @@ export default function Dashboard() {
   
   const formattedDate = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
   
-  const { user } = useAuth();
+  const user = useUser();
   
   const { data: activity } = useQuery<Activity>({
     queryKey: ['/api/activities', formattedDate],
@@ -91,7 +91,15 @@ export default function Dashboard() {
           <div className="p-4">
             <h2 className="text-sm font-medium mb-3 text-white/80">Activity Rings</h2>
             {activity && (
-              <ActivitySummary data={activity} />
+              <ActivitySummary data={{
+                moveProgress: activity.moveProgress || 0,
+                exerciseProgress: activity.exerciseProgress || 0,
+                standProgress: activity.standProgress || 0,
+                caloriesBurned: activity.caloriesBurned || 0,
+                moveGoal: activity.moveGoal || 600,
+                exerciseGoal: activity.exerciseGoal || 30,
+                standGoal: activity.standGoal || 12
+              }} />
             )}
           </div>
         </div>

@@ -16,6 +16,7 @@ import Profile from "@/pages/Profile";
 import NotFound from "@/pages/not-found";
 import './index.css'
 import { User } from '@shared/schema';
+import { UserProvider } from './UserContext';
 
 // Simple check if user is logged in
 function AuthenticatedApp() {
@@ -59,17 +60,19 @@ function AuthenticatedApp() {
   }
 
   return (
-    <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/workouts/:id" component={Workouts} />
-      <Route path="/workouts" component={Workouts} />
-      <Route path="/workout-builder" component={WorkoutBuilder} />
-      <Route path="/workout-videos" component={WorkoutVideos} />
-      <Route path="/workout-music" component={WorkoutMusic} />
-      <Route path="/progress" component={Progress} />
-      <Route path="/profile" component={Profile} />
-      <Route path="*" component={NotFound} />
-    </Switch>
+    <UserProvider user={user}>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/workouts/:id" component={Workouts} />
+        <Route path="/workouts" component={Workouts} />
+        <Route path="/workout-builder" component={WorkoutBuilder} />
+        <Route path="/workout-videos" component={WorkoutVideos} />
+        <Route path="/workout-music" component={WorkoutMusic} />
+        <Route path="/progress" component={Progress} />
+        <Route path="/profile" component={Profile} />
+        <Route path="*" component={NotFound} />
+      </Switch>
+    </UserProvider>
   );
 }
 
