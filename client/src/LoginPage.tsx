@@ -103,12 +103,11 @@ export default function LoginPage() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Set a flag in localStorage to indicate successful authentication
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('authTimestamp', Date.now().toString());
-      
-      // Use a simple redirect to the root page
-      window.location.assign('/');
+      // Force a complete page reload to ensure proper auth state handling
+      setTimeout(() => {
+        window.location.href = "/";
+        window.location.reload();
+      }, 100);
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
