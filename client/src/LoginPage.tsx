@@ -117,102 +117,103 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
-      <div className="w-full max-w-md bg-white rounded-xl p-8 shadow-2xl border-2 border-blue-200">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+      <div className="w-full max-w-md bg-white rounded-xl">
         {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <div className="relative w-20 h-20">
-            <div className="absolute inset-0 bg-gradient-to-tr from-orange-400 via-red-500 to-pink-500 rounded-full opacity-30"></div>
+        <div className="flex justify-center mb-4">
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-full opacity-20"></div>
             <div className="relative z-10 w-full h-full flex items-center justify-center">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-12 w-12">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-10 w-10 text-blue-600">
                 <path d="M17.05,20.28c-0.98,0.95-2.05,0.8-3.08,0.35c-1.09-0.46-2.09-0.48-3.24,0c-1.44,0.62-2.2,0.44-3.06-0.35 C2.79,15.5,3.51,7.6,8.56,7.31c1.65,0.07,2.47,0.95,3.56,0.97c1.19-0.15,2.09-1.05,3.6-1.1c1.58,0.06,2.77,0.87,3.55,2.18 c-3.21,1.93-2.62,6.18,0.38,7.53C19.11,18.1,18.36,19.15,17.05,20.28z M13.06,3.14c1.36-1.78,3.9-1.88,4.29-1.9 C16.5,3.95,14.23,4.8,13.06,3.14z"/>
               </svg>
             </div>
           </div>
         </div>
         
-        <h1 className="text-3xl font-bold text-center mb-2 text-black">
-          {isSignupMode ? "Create Account" : "Sign In"}
+        <h1 className="text-2xl font-semibold text-center mb-2 text-gray-900">
+          {isSignupMode ? "Create Fitness Account" : "Sign in with Username"}
         </h1>
         
-        <p className="text-md text-gray-700 text-center mb-6 font-medium">
-          {isSignupMode ? "Sign up for Fitness Tracker" : "Sign in to Fitness Tracker"}
-        </p>
-        
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4 text-center">
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm my-4 text-center">
             {error}
           </div>
         )}
         
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-base font-bold text-gray-900 mb-2 ml-1">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username" 
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg text-gray-900 bg-gray-100 font-medium placeholder-gray-500"
-              required
-            />
-          </div>
-          
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-base font-bold text-gray-900 mb-2 ml-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg text-gray-900 bg-gray-100 font-medium placeholder-gray-500"
-              required
-            />
-          </div>
-          
-          <button
-            type="submit"
-            disabled={loading || !username || !password}
-            className={`w-full py-4 rounded-lg font-semibold text-white text-lg
-              ${(loading || !username || !password) 
-                ? 'bg-blue-400 cursor-not-allowed' 
-                : 'bg-blue-600 hover:bg-blue-700 shadow-md'}`}
-          >
-            {loading 
-              ? "Processing..." 
-              : isSignupMode ? "Create Account" : "Sign In"}
-          </button>
-        </form>
-        
-        <div className="mt-6 text-center space-y-4">
-          <button
-            type="button"
-            onClick={() => setIsSignupMode(!isSignupMode)}
-            className="text-blue-600 hover:text-blue-800 font-medium text-base px-4 py-2 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
-          >
-            {isSignupMode 
-              ? "Already have an account? Sign In" 
-              : "Don't have an account? Sign Up"}
-          </button>
-          
-          {!isSignupMode && (
-            <div>
-              <button
-                type="button"
-                onClick={() => setShowPasswordReset(true)}
-                className="text-blue-600 hover:text-blue-800 text-sm mt-3"
-              >
-                Forgot username or password?
-              </button>
+        <form onSubmit={handleSubmit} className="mt-8">
+          <div className="space-y-4">
+            <div className="relative">
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username" 
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base text-gray-900 bg-gray-50 font-normal placeholder-gray-500"
+                required
+              />
+              {username && (
+                <button 
+                  type="button"
+                  onClick={() => setUsername("")}
+                  className="absolute right-4 top-3 text-gray-400 hover:text-gray-600"
+                >
+                  ×
+                </button>
+              )}
             </div>
-          )}
-        </div>
+            
+            <div className="relative">
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base text-gray-900 bg-gray-50 font-normal placeholder-gray-500"
+                required
+              />
+            </div>
+            
+            <button
+              type="submit"
+              disabled={loading || !username || !password}
+              className={`w-full py-3 rounded-lg font-medium text-white text-base mt-2
+                ${(loading || !username || !password) 
+                  ? 'bg-blue-400 cursor-not-allowed' 
+                  : 'bg-blue-600 hover:bg-blue-700'}`}
+            >
+              {loading 
+                ? "Processing..." 
+                : "Continue"}
+            </button>
+          </div>
+          
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setIsSignupMode(!isSignupMode)}
+              className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+            >
+              {isSignupMode 
+                ? "Already have an account? Sign In" 
+                : "Don't have an account? Create one now"}
+            </button>
+            
+            {!isSignupMode && (
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordReset(true)}
+                  className="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  Forgot username or password?
+                </button>
+              </div>
+            )}
+          </div>
+        </form>
       </div>
       
       {/* Password Reset Dialog */}
