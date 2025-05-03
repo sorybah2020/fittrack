@@ -24,7 +24,18 @@ export default function Router() {
       return;
     }
     
-    // Only check auth if we're not on login/signup pages
+    // Check for the keepMeSignedIn flag in localStorage first
+    const keepMeSignedIn = localStorage.getItem('keepMeSignedIn') === 'true';
+    const storedUser = localStorage.getItem('user');
+    
+    if (keepMeSignedIn && storedUser) {
+      console.log("Using saved authentication");
+      setIsAuthenticated(true);
+      setLoading(false);
+      return;
+    }
+    
+    // Only check auth if we're not on login/signup pages and don't have saved auth
     async function checkAuth() {
       try {
         const response = await fetch('/api/user', {
@@ -34,13 +45,13 @@ export default function Router() {
           setIsAuthenticated(true);
         } else {
           // If not authenticated, redirect to login page
-          window.location.href = '/login';
+          window.location.href = '/login.html';
           return;
         }
       } catch (error) {
         console.error('Auth check error:', error);
         setIsAuthenticated(false);
-        window.location.href = '/login';
+        window.location.href = '/login.html';
         return;
       } finally {
         setLoading(false);

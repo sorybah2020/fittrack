@@ -230,14 +230,7 @@ export default function Workouts() {
         )}
       </div>
       
-      {/* Bottom Navigation */}
-      <BottomNavbar onAddClick={() => setIsAddWorkoutOpen(true)} />
-      
-      {/* Add Workout Modal */}
-      <AddWorkoutModal 
-        isOpen={isAddWorkoutOpen}
-        onClose={() => setIsAddWorkoutOpen(false)}
-      />
+      {/* Add Workout Modal and Bottom Navigation moved to App level */}
       
       {/* Edit Workout Modal */}
       {selectedWorkout && (

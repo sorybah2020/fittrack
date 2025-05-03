@@ -295,6 +295,15 @@
           localStorage.removeItem('fitness_username');
         }
         
+        // Save user data if "Keep me signed in" is checked
+        if (rememberMe.checked) {
+          localStorage.setItem('keepMeSignedIn', 'true');
+          localStorage.setItem('user', JSON.stringify(data));
+        } else {
+          localStorage.removeItem('keepMeSignedIn');
+          localStorage.removeItem('user');
+        }
+        
         // Redirect to dashboard
         window.location.href = "/";
       } catch (err) {
