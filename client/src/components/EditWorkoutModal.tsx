@@ -56,13 +56,13 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
   useEffect(() => {
     if (workout) {
       form.reset({
-        name: workout.name,
+        name: workout.name || "",
         workoutTypeId: workout.workoutTypeId,
         date: format(new Date(workout.date), "yyyy-MM-dd"),
-        duration: workout.duration,
-        distance: workout.distance,
+        duration: workout.duration || 0,
+        distance: workout.distance !== null && workout.distance !== undefined ? workout.distance : undefined,
         notes: workout.notes || "",
-        intensity: workout.intensity,
+        intensity: workout.intensity || "medium",
       });
     }
   }, [workout, form]);
@@ -154,7 +154,14 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                   <FormItem>
                     <FormLabel>Workout Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter workout name" {...field} />
+                      <Input 
+                        placeholder="Enter workout name" 
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -197,7 +204,14 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                     <FormItem>
                       <FormLabel>Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input 
+                          type="date" 
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -240,12 +254,14 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                           min={0} 
                           step={0.1}
                           placeholder="Optional"
-                          {...field}
-                          value={field.value === undefined ? '' : field.value}
+                          value={field.value === null || field.value === undefined ? '' : field.value}
                           onChange={(e) => {
                             const value = e.target.value === '' ? undefined : parseFloat(e.target.value);
                             field.onChange(value);
                           }}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
@@ -261,7 +277,7 @@ export function EditWorkoutModal({ isOpen, onClose, workout, workoutTypes }: Edi
                       <FormLabel>Intensity</FormLabel>
                       <Select 
                         onValueChange={field.onChange}
-                        value={field.value}
+                        value={field.value || "medium"}
                       >
                         <FormControl>
                           <SelectTrigger>

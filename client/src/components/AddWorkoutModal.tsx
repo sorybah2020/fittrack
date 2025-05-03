@@ -210,8 +210,8 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
                       <Input 
                         type="number" 
                         min="1" 
-                        value={field.value === null ? '' : field.value}
-                        onChange={(e) => field.onChange(e.target.value || '')}
+                        value={field.value === null || field.value === undefined ? '' : field.value}
+                        onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
                         onBlur={field.onBlur}
                         name={field.name}
                         ref={field.ref}
@@ -233,9 +233,9 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
                         type="number" 
                         step="0.1" 
                         min="0" 
-                        value={field.value === null ? '' : field.value}
+                        value={field.value === null || field.value === undefined ? '' : field.value}
                         onChange={(e) => {
-                          const value = e.target.value === '' ? '' : e.target.value;
+                          const value = e.target.value === '' ? undefined : parseFloat(e.target.value);
                           field.onChange(value);
                         }}
                         onBlur={field.onBlur}
@@ -257,7 +257,7 @@ export function AddWorkoutModal({ isOpen, onClose }: AddWorkoutModalProps) {
                   <FormLabel>Intensity</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value || "medium"}
                   >
                     <FormControl>
                       <SelectTrigger>
