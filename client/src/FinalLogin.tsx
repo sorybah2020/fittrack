@@ -266,6 +266,29 @@ export default function FinalLogin() {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
+                // Send logout request
+                fetch("/api/logout", {
+                  method: "POST",
+                  credentials: "include"
+                }).then(() => {
+                  console.log("Logout successful");
+                }).catch(err => {
+                  console.error("Logout error:", err);
+                });
+              }}
+              style={{
+                color: "#d00000",
+                textDecoration: "none",
+                fontSize: "14px"
+              }}
+            >
+              Log Out Current User
+            </a>
+
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
                 alert("Password reset functionality would go here");
               }}
               style={{

@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, Trophy, Award, Target, Save, LogOut } from "lucide-react";
+import { ChevronLeft, Trophy, Award, Target, Save } from "lucide-react";
 import { Link } from "wouter";
 
 const profileFormSchema = z.object({
@@ -112,11 +112,7 @@ export default function Profile() {
     updateProfileMutation.mutate(data);
   }
   
-  const { logoutMutation } = useAuth();
-  
-  function handleLogout() {
-    logoutMutation.mutate();
-  }
+  // Logout functionality moved to the Login page
   
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -144,17 +140,6 @@ export default function Profile() {
           </Avatar>
           <div>
             <h2 className="text-xl font-semibold text-white">{user?.username}</h2>
-            <div className="flex items-center mt-1">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-red-500 hover:text-red-400 hover:bg-red-500/10 px-0" 
-                onClick={handleLogout}
-              >
-                <LogOut className="h-4 w-4 mr-1" />
-                Logout
-              </Button>
-            </div>
           </div>
         </div>
         

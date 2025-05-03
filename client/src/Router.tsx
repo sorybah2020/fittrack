@@ -88,6 +88,8 @@ export default function Router() {
   switch (path) {
     case '/signup':
       return <SignUp />;
+    case '/login':
+      return <FinalLogin />;
     default:
       return <FinalLogin />;
   }
