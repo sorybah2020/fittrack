@@ -103,15 +103,12 @@ export default function LoginPage() {
 
       console.log(`${isSignupMode ? "Registration" : "Login"} successful!`);
       
-      // Use a hard page reload with a direct URL to make sure we completely refresh
-      window.location.href = "/"; 
+      // Set a flag in localStorage to indicate successful authentication
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('authTimestamp', Date.now().toString());
       
-      // If the above doesn't redirect immediately, force a complete refresh
-      setTimeout(() => {
-        document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;"><p>Login successful! Redirecting to dashboard...</p></div>';
-        window.location.href = '/';
-        window.location.reload();
-      }, 200);
+      // Use a simple redirect to the root page
+      window.location.assign('/');
     } catch (err) {
       console.error(`${isSignupMode ? "Registration" : "Login"} error:`, err);
       setError(err instanceof Error ? err.message : `${isSignupMode ? "Registration" : "Login"} failed`);
