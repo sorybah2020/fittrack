@@ -50,17 +50,8 @@ export const isSpotifyLoggedIn = (): boolean => {
 
 // Get authentication URL for Spotify login
 export const getSpotifyAuthUrl = (): string => {
-  const scopes = [
-    'user-read-private',
-    'user-read-email',
-    'playlist-read-private',
-    'playlist-modify-public',
-    'playlist-modify-private',
-    'user-library-read',
-    'user-top-read'
-  ];
-  
-  return spotifyApi.createAuthorizeURL(scopes, 'fitness_app_state');
+  // Instead of using the client-side spotifyApi.createAuthorizeURL, we'll use the server endpoint
+  return `/api/spotify/login`;
 };
 
 // Handle the Spotify authentication callback

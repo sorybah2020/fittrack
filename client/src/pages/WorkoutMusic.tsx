@@ -237,9 +237,25 @@ export default function WorkoutMusic() {
   });
   
   // Handle Spotify login
-  const handleSpotifyLogin = () => {
-    const authUrl = getSpotifyAuthUrl();
-    window.location.href = authUrl;
+  const handleSpotifyLogin = async () => {
+    try {
+      // Get the auth URL from the server instead
+      const response = await fetch(getSpotifyAuthUrl());
+      const data = await response.json();
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('Invalid authorization URL');
+      }
+    } catch (error) {
+      console.error('Error getting Spotify auth URL:', error);
+      toast({
+        title: 'Connection Error',
+        description: 'Failed to connect to Spotify. Please try again.',
+        variant: 'destructive'
+      });
+    }
   };
   
   // Handle Spotify logout
