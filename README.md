@@ -1,8 +1,9 @@
+
 # FitTrack
 
 A web-based fitness tracking application inspired by Apple Fitness, featuring activity rings, workout tracking, and personalized insights.
 
-![FitTrack Screenshot](screenshot.png)
+
 
 ## Features
 
@@ -82,3 +83,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Inspired by Apple Fitness app
 - Workout videos courtesy of Chloe Ting
 - Music integration powered by Spotify API
+=======
+# fittrack
+FitTrack: A web-based fitness app inspired by Apple Fitness, featuring activity rings, workout tracking, and personalized insights. Built with React, TypeScript, Node.js, and PostgreSQL for a seamless cross-platform experience with elegant visualizations.
+>>>>>>> 
